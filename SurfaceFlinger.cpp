@@ -497,8 +497,7 @@ void SurfaceFlinger::init() {
 
     // start the EventThread
     sp<VSyncSource> vsyncSrc = new DispSyncSource(&mPrimaryDispSync,
-//            vsyncPhaseOffsetNs, true, "app");
-            0, true, "app");
+            vsyncPhaseOffsetNs, true, "app");
     mEventThread = new EventThread(vsyncSrc);
     sp<VSyncSource> sfVsyncSrc = new DispSyncSource(&mPrimaryDispSync,
 //            sfVsyncPhaseOffsetNs, true, "sf");

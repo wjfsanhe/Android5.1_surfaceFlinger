@@ -34,6 +34,7 @@
 #include <android/looper.h>
 #include <gui/DisplayEventReceiver.h>
 #include <utils/Looper.h>
+#include <time.h>
 
 /*test*/
 
@@ -41,6 +42,15 @@ using namespace android;
 
 //namespace android 
 //we will post memory at receiver.
+int64_t getSystemTime()
+{
+    struct timespec t;
+    t.tv_sec = t.tv_nsec = 0;
+    clock_gettime(CLOCK_MONOTONIC, &t);
+    return (int64_t)(t.tv_sec)*1000000000LL + t.tv_nsec;
+}
+
+
 int receiver(int fd, int events, void* data)
 {
     DisplayEventReceiver* q = (DisplayEventReceiver*)data;
@@ -53,11 +63,11 @@ int receiver(int fd, int events, void* data)
     while ((n = q->getEvents(buffer, 1)) > 0) {
         for (int i=0 ; i<n ; i++) {
             if (buffer[i].header.type == DisplayEventReceiver::DISPLAY_EVENT_VSYNC) {
-                printf("event vsync: count=%d\t", buffer[i].vsync.count);
+                //printf("event vsync: count=%d\t", buffer[i].vsync.count);
             }
             if (oldTimeStamp) {
                 float t = float(buffer[i].header.timestamp - oldTimeStamp) / s2ns(1);
-                printf("%f ms (%f Hz)\n", t*1000, 1.0/t);
+                //printf("%f ms (%f Hz)\n", t*1000, 1.0/t);
             }
             oldTimeStamp = buffer[i].header.timestamp;
         }
@@ -104,6 +114,7 @@ int main(int argc, char** argv)
     ALOGD("change surface Content  %s %d",__func__,__LINE__);
     ssize_t bpr = outBuffer.stride * bytesPerPixel(outBuffer.format);
     bool oddEven=true;
+    int64_t  start,end,end2;
    do {
         //printf("about to poll...\n");
         int32_t ret = loop->pollOnce(-1);
@@ -113,13 +124,26 @@ int main(int argc, char** argv)
                 break;
             case ALOOPER_POLL_CALLBACK:
 		{
+			
+                	float t = float(systemTime() - start) / s2ns(1);
+			start=systemTime();
+			
 			if(oddEven){
 				android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
+				end2=systemTime();
 				surface->Post();
 			} else {
 				android_memset16((uint16_t*)outBuffer.bits, 0x07E0, bpr*outBuffer.height);
+				end2=systemTime();
 				surface->Post();
 			}
+			end=systemTime();
+			float cost=float(end-start)/ s2ns(1);
+			float cost2=float(end2-start)/ s2ns(1);
+			
+			
+                	printf("%f ms (%f Hz), draw cost %f ms,simple cost %f ms\n", t*1000, 1.0/t,cost*1000
+								,cost2*1000);
 			oddEven=!oddEven;
                 };
                 break;
