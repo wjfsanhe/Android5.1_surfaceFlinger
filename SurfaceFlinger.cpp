@@ -500,8 +500,8 @@ void SurfaceFlinger::init() {
             vsyncPhaseOffsetNs, true, "app");
     mEventThread = new EventThread(vsyncSrc);
     sp<VSyncSource> sfVsyncSrc = new DispSyncSource(&mPrimaryDispSync,
-//            sfVsyncPhaseOffsetNs, true, "sf");
-            0, true, "sf");
+            sfVsyncPhaseOffsetNs, true, "sf");
+    //        0, true, "sf");
     mSFEventThread = new EventThread(sfVsyncSrc);
     mEventQueue.setEventThread(mSFEventThread);
 
@@ -774,6 +774,12 @@ void SurfaceFlinger::signalTransaction() {
 }
 
 void SurfaceFlinger::signalLayerUpdate() {
+    char property[PROPERTY_VALUE_MAX];
+    int32_t   bypass=0;                         
+   	if(property_get("sys.sf.inv",property, "0") > 0){
+		bypass = atoi(property) ;
+    }
+    if(bypass == 0 )
     mEventQueue.invalidate();
 }
 

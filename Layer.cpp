@@ -161,7 +161,7 @@ void Layer::onFirstRef() {
 #warning "disabling triple buffering"
     mSurfaceFlingerConsumer->setDefaultMaxBufferCount(2);
 #else
-    mSurfaceFlingerConsumer->setDefaultMaxBufferCount(3);
+    mSurfaceFlingerConsumer->setDefaultMaxBufferCount(5);
 
 #ifdef QCOM_BSP
     char property[PROPERTY_VALUE_MAX];
@@ -1283,7 +1283,7 @@ bool Layer::isVisible() const {
 Region Layer::latchBuffer(bool& recomputeVisibleRegions)
 {
     ATRACE_CALL();
-    ALOGD("Layer latchbuffer");
+    //ALOGD("Layer latchbuffer");
     if (android_atomic_acquire_cas(true, false, &mSidebandStreamChanged) == 0) {
         // mSidebandStreamChanged was true
         mSidebandStream = mSurfaceFlingerConsumer->getSidebandStream();
@@ -1421,7 +1421,7 @@ Region Layer::latchBuffer(bool& recomputeVisibleRegions)
 
         status_t updateResult = mSurfaceFlingerConsumer->updateTexImage(&r,
                 mFlinger->mPrimaryDispSync);
-	ALOGD("layer latch buffer udpateTexImage");
+	//ALOGD("layer latch buffer udpateTexImage");
         if (updateResult == BufferQueue::PRESENT_LATER) {
             // Producer doesn't want buffer to be displayed yet.  Signal a
             // layer update so we check again at the next opportunity.

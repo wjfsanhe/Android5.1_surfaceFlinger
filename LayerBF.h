@@ -19,6 +19,7 @@
 
 #include <stdint.h>
 #include <sys/types.h>
+#include <cutils/sockets.h>
 
 #include "Layer.h"
 
@@ -41,12 +42,16 @@ public:
     * to figure out if the content or size of a surface has changed.
     *///    Region latchBuffer(bool& recomputeVisibleRegions);
     virtual Region latchBuffer(bool& recomputeVisibleRegions);
+	
+    virtual void onLayerDisplayed(const sp<const DisplayDevice>& hw,
+            HWComposer::HWCLayerInterface* layer);
 protected:
     void onFirstRef();
     virtual void onFrameAvailable(const BufferItem& item);
 private:
     uint32_t mFirstCall;	
     Region mDirtyRegion;
+    int32_t mSock;	
 };
 
 // ---------------------------------------------------------------------------

@@ -220,7 +220,7 @@ public:
     /*
      * called after page-flip
      */
-    void onLayerDisplayed(const sp<const DisplayDevice>& hw,
+    virtual void onLayerDisplayed(const sp<const DisplayDevice>& hw,
             HWComposer::HWCLayerInterface* layer);
 
     bool shouldPresentNow(const DispSync& dispSync) const;

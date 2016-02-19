@@ -57,6 +57,19 @@ void LayerBF::onFirstRef() {
 
     const sp<const DisplayDevice> hw(mFlinger->getDefaultDisplayDevice());
     updateTransformHint(hw);
+
+
+    //cretae local socket here.
+    if((mSock = socket_local_client("/data/data/signalBF",
+                                 //ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+                                 ANDROID_SOCKET_NAMESPACE_FILESYSTEM,
+                                 SOCK_STREAM)) < 0) {    
+    	ALOGE("LayerBF: create local socket fail,%s",strerror(errno));
+    } else {
+	ALOGD("LayerBF: cretae local socket success");
+    }
+	
+
     ALOGE("LayerBF:**on first REF\n") ;
 }
 void LayerBF::onFrameAvailable(const BufferItem& item) {
@@ -68,7 +81,23 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
     }
     ALOGD("LayerBF new frame coming");
     android_atomic_inc(&mQueuedFrames);
-    mFlinger->signalLayerUpdate();
+    //mFlinger->signalLayerUpdate();
+    mFlinger->signalRefresh();
+}
+
+void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
+        HWComposer::HWCLayerInterface* layer) {
+	char cmd[20]="SignalT";
+    ALOGD("layered displayed ,callback trigger");
+    if (layer) {
+        layer->onDisplayed();
+        mSurfaceFlingerConsumer->setReleaseFence(layer->getAndResetReleaseFence());
+	if(mSock >0){
+		//send signal to app layer.
+		ALOGD("send sigbf to app layer");
+		write(mSock,cmd, strlen(cmd)+1 );
+	}
+    }
 }
 
 Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)

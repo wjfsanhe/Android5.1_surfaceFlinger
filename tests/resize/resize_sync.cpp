@@ -35,10 +35,14 @@
 #include <gui/DisplayEventReceiver.h>
 #include <utils/Looper.h>
 #include <time.h>
-
+#include <cutils/sockets.h>
 /*test*/
 
 using namespace android;
+
+//global varible
+sp<Surface> surface ;
+
 
 //namespace android 
 //we will post memory at receiver.
@@ -81,6 +85,12 @@ int receiver(int fd, int events, void* data)
 
 int main(int argc, char** argv)
 {
+	
+    int32_t  mSock ;
+    mSock = socket_local_server("signalBF",
+                                   ANDROID_SOCKET_NAMESPACE_RESERVED,
+                                   SOCK_STREAM);
+
     // set up the thread-pool
     DisplayEventReceiver myDisplayEvent;
     sp<ProcessState> proc(ProcessState::self());
@@ -92,10 +102,10 @@ int main(int argc, char** argv)
 
     // create a client to surfaceflinger
     sp<SurfaceComposerClient> client = new SurfaceComposerClient();
-    ALOGE(" Begin resize work\n"); 
+    printf(" Begin resize work\n"); 
     sp<SurfaceControl> surfaceControl = client->createSurface(String8("resize"),
             1440, 2560, PIXEL_FORMAT_RGB_565, 0x40000);
-    sp<Surface> surface = surfaceControl->getSurface();
+    surface = surfaceControl->getSurface();
 
     SurfaceComposerClient::openGlobalTransaction();
     surfaceControl->setLayer(300000);
@@ -111,10 +121,14 @@ int main(int argc, char** argv)
     myDisplayEvent.setVsyncRate(vsyncRate);
 
 
-    ALOGD("change surface Content  %s %d",__func__,__LINE__);
+    printf("change surface Content  %s %d",__func__,__LINE__);
     ssize_t bpr = outBuffer.stride * bytesPerPixel(outBuffer.format);
     bool oddEven=true;
     int64_t  start,end,end2;
+    uint16_t *region1Start=(uint16_t*)(outBuffer.bits) ;
+    uint16_t *region2Start=(uint16_t*)((outBuffer.bits) + bpr*outBuffer.height/3);
+    uint16_t *region3Start=(uint16_t*)((outBuffer.bits) + bpr*outBuffer.height*2/3);
+#if  0
    do {
         //printf("about to poll...\n");
         int32_t ret = loop->pollOnce(-1);
@@ -130,10 +144,31 @@ int main(int argc, char** argv)
 			
 			if(oddEven){
 				android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
+				
+				/*android_memset16(region3Start, 0x0000, bpr*outBuffer.height/3);
+				android_memset16(region1Start, 0xF800, bpr*outBuffer.height/3);
+				//usleep(5000);
+				android_memset16(region1Start, 0x0000, bpr*outBuffer.height/3);
+				android_memset16(region2Start, 0xF800, bpr*outBuffer.height/3);
+				//usleep(5000);
+				
+				android_memset16(region2Start, 0x0000, bpr*outBuffer.height/3);
+				android_memset16(region3Start, 0xF800, bpr*outBuffer.height/3);*/
 				end2=systemTime();
 				surface->Post();
 			} else {
 				android_memset16((uint16_t*)outBuffer.bits, 0x07E0, bpr*outBuffer.height);
+				
+				/*android_memset16(region3Start, 0x0000, bpr*outBuffer.height/3);
+				android_memset16(region1Start, 0x07E0, bpr*outBuffer.height/3);
+				//usleep(5000);
+				android_memset16(region1Start, 0x0000, bpr*outBuffer.height/3);
+				android_memset16(region2Start, 0x07E0, bpr*outBuffer.height/3);
+				//usleep(5000);
+				
+				android_memset16(region2Start, 0x0000, bpr*outBuffer.height/3);
+				android_memset16(region3Start, 0x07E0, bpr*outBuffer.height/3);*/
+				
 				end2=systemTime();
 				surface->Post();
 			}
@@ -142,8 +177,8 @@ int main(int argc, char** argv)
 			float cost2=float(end2-start)/ s2ns(1);
 			
 			
-                	printf("%f ms (%f Hz), draw cost %f ms,simple cost %f ms\n", t*1000, 1.0/t,cost*1000
-								,cost2*1000);
+                	//printf("%f ms (%f Hz), draw cost %f ms,simple cost %f ms\n", t*1000, 1.0/t,cost*1000
+			//					,cost2*1000);
 			oddEven=!oddEven;
                 };
                 break;
@@ -158,7 +193,66 @@ int main(int argc, char** argv)
                 break;
         }
     } while (1); 
+#else
+    
+    if((mSock) /*= socket_local_client("signalBF",
+                                 ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+                                 SOCK_DGRAM))*/ < 0) {    
+    	printf("resize: create local socket fail, %s\n",strerror(errno));
+	return -1;
+    } else {
+	printf("resize: cretae local socket success\n");
+	return 0;
+    }
+    char *buffer = (char*)malloc(4096);
 
+    //create the first post.
+    android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
+    surface->Post();
+    
+    while(1) {
+        fd_set read_fds;
+        struct timeval to;
+        int rc = 0;
+
+        to.tv_sec = 10;
+        to.tv_usec = 0;
+
+        FD_ZERO(&read_fds);
+        FD_SET(mSock, &read_fds);
+
+        if ((rc = select(mSock + 1, &read_fds, NULL, NULL, &to)) < 0) {
+            fprintf(stderr, "Error in select (%s)\n", strerror(errno));
+            break;
+        } else if (!rc) {
+            fprintf(stderr, "[TIMEOUT]\n");
+            continue;
+        } else if (FD_ISSET(mSock, &read_fds)) {
+            memset(buffer, 0, 4096);
+            if ((rc = read(mSock, buffer, 4096)) <= 0) {
+                if (rc == 0) {
+                    fprintf(stderr, "Lost connection to LayerBF?\n");
+		    continue ;
+		}
+                else {
+                    fprintf(stderr, "Error reading data (%s)\n", strerror(errno));
+		    break;
+		}
+            }
+	    //commit new post
+	    printf("got message:%s\n",buffer);
+	    oddEven=!oddEven;
+	    if(oddEven)
+   	    android_memset16((uint16_t*)outBuffer.bits, 0x07E0, bpr*outBuffer.height);
+	    else
+   	    android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
+    	    surface->Post();
+	    
+         }
+    }
+    free(buffer);    
+
+#endif
     surface->unlockAndPost();
 	    ALOGD("change surface Content");
     sleep(1);

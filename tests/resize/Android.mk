@@ -2,7 +2,8 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
-	resize_sync.cpp
+	resize_signal.cpp
+#	localsocket.cpp
 
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
