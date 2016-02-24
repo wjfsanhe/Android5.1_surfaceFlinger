@@ -30,6 +30,7 @@
 
 namespace android {
 // ---------------------------------------------------------------------------
+const String8 SOCKET_NAME("signalBF");
 
 LayerBF::LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,
         const String8& name, uint32_t w, uint32_t h, uint32_t flags)
@@ -60,9 +61,9 @@ void LayerBF::onFirstRef() {
 
 
     //cretae local socket here.
-    if((mSock = socket_local_client("/data/data/signalBF",
-                                 //ANDROID_SOCKET_NAMESPACE_ABSTRACT,
-                                 ANDROID_SOCKET_NAMESPACE_FILESYSTEM,
+    if((mSock = socket_local_client(SOCKET_NAME.string(),
+                                 ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+                                 //ANDROID_SOCKET_NAMESPACE_FILESYSTEM,
                                  SOCK_STREAM)) < 0) {    
     	ALOGE("LayerBF: create local socket fail,%s",strerror(errno));
     } else {
@@ -88,13 +89,16 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
 void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
         HWComposer::HWCLayerInterface* layer) {
 	char cmd[20]="SignalT";
-    ALOGD("layered displayed ,callback trigger");
+    //ALOGD("layered displayed ,callback trigger");
     if (layer) {
         layer->onDisplayed();
-        mSurfaceFlingerConsumer->setReleaseFence(layer->getAndResetReleaseFence());
+	sp<Fence> waitFence=layer->getAndResetReleaseFence();
+        mSurfaceFlingerConsumer->setReleaseFence(waitFence);
+	//status_t status=waitFence->wait(17);	
+	//if(status == -ETIME) ALOGD ("LayerBF fence timeout");
 	if(mSock >0){
 		//send signal to app layer.
-		ALOGD("send sigbf to app layer");
+		//ALOGD("send sigbf to app layer");
 		write(mSock,cmd, strlen(cmd)+1 );
 	}
     }
@@ -102,10 +106,14 @@ void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
 
 Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)
 {
-	ALOGD("LayerBF:latchBuffer");
+	//ALOGD("LayerBF:latchBuffer");
 	if (mFirstCall == 1){
 		mDirtyRegion=Layer::latchBuffer(recomputeVisibleRegions);//we use Layer::LatchBuffer to update Texture.
 		mFirstCall=0;	
+	} else {
+		BufferQueue::BufferItem item;
+        	mSurfaceFlingerConsumer->acquireBufferLocked(&item,0);
+		ALOGD("LayerBF:acquire buffer %d",item.mBuf);	
 	}
 	return mDirtyRegion;
 }

@@ -161,7 +161,7 @@ void Layer::onFirstRef() {
 #warning "disabling triple buffering"
     mSurfaceFlingerConsumer->setDefaultMaxBufferCount(2);
 #else
-    mSurfaceFlingerConsumer->setDefaultMaxBufferCount(5);
+    mSurfaceFlingerConsumer->setDefaultMaxBufferCount(3);
 
 #ifdef QCOM_BSP
     char property[PROPERTY_VALUE_MAX];
