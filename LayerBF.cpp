@@ -111,6 +111,7 @@ Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)
 		mDirtyRegion=Layer::latchBuffer(recomputeVisibleRegions);//we use Layer::LatchBuffer to update Texture.
 		mFirstCall=0;	
 	} else {
+		android_atomic_dec(&mQueuedFrames);
 		BufferQueue::BufferItem item;
         	mSurfaceFlingerConsumer->acquireBufferLocked(&item,0);
 		ALOGD("LayerBF:acquire buffer %d",item.mBuf);	
