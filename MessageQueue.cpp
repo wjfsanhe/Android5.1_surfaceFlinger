@@ -157,7 +157,9 @@ status_t MessageQueue::postMessage(
 void MessageQueue::invalidateTransactionNow() {
     mHandler->dispatchTransaction();
 }
-
+void MessageQueue::push() {
+    mHandler->dispatchInvalidate();
+}
 void MessageQueue::invalidate() {
 #if INVALIDATE_ON_VSYNC
     mEvents->requestNextVsync();

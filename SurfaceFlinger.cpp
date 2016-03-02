@@ -786,6 +786,9 @@ void SurfaceFlinger::signalLayerUpdate() {
 void SurfaceFlinger::signalRefresh() {
     mEventQueue.refresh();
 }
+void SurfaceFlinger::signalLayerPush(){
+    mEventQueue.push();
+}
 
 status_t SurfaceFlinger::postMessageAsync(const sp<MessageBase>& msg,
         nsecs_t reltime, uint32_t /* flags */) {

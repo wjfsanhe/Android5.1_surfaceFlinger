@@ -93,7 +93,8 @@ public:
     enum {
         INVALIDATE  = 0,
         REFRESH     = 1,
-        TRANSACTION = 2
+        TRANSACTION = 2,
+	PUSH	    = 3
     };
 
     MessageQueue();
@@ -108,6 +109,8 @@ public:
     void invalidate();
     // sends REFRESH message at next VSYNC
     void refresh();
+    // send Message directly
+    void push();
     // sends TRANSACTION message immediately
     void invalidateTransactionNow();
 };

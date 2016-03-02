@@ -83,13 +83,13 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
     ALOGD("LayerBF new frame coming");
     android_atomic_inc(&mQueuedFrames);
     //mFlinger->signalLayerUpdate();
-    mFlinger->signalRefresh();
+    mFlinger->signalLayerPush();
+    //mFlinger->signalRefresh();
 }
 
 void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
         HWComposer::HWCLayerInterface* layer) {
 	char cmd[20]="SignalT";
-    //ALOGD("layered displayed ,callback trigger");
     if (layer) {
         layer->onDisplayed();
 	sp<Fence> waitFence=layer->getAndResetReleaseFence();
