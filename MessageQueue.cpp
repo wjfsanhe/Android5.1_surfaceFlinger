@@ -182,6 +182,7 @@ int MessageQueue::cb_eventReceiver(int fd, int events, void* data) {
 int MessageQueue::eventReceiver(int /*fd*/, int /*events*/) {
     ssize_t n;
     DisplayEventReceiver::Event buffer[8];
+    ALOGD(" SF MessageQueue: %s",__func__);
     while ((n = DisplayEventReceiver::getEvents(mEventTube, buffer, 8)) > 0) {
         for (int i=0 ; i<n ; i++) {
             if (buffer[i].header.type == DisplayEventReceiver::DISPLAY_EVENT_VSYNC) {

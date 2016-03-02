@@ -261,6 +261,7 @@ private:
     void signalTransaction();
     void signalLayerUpdate();
     void signalRefresh();
+    void signalPush();
 
     // called on the main thread in response to initializeDisplays()
     void onInitializeDisplays();

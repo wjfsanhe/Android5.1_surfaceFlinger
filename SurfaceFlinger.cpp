@@ -787,6 +787,21 @@ void SurfaceFlinger::signalRefresh() {
     mEventQueue.refresh();
 }
 
+void SurfaceFlinger::signalPush() {
+	//mEventQueue.push();
+	bool refreshNeeded = handleMessageTransaction();
+	refreshNeeded |= handleMessageInvalidate();
+	refreshNeeded |= mRepaintEverything;
+	if (refreshNeeded) {
+		// Signal a refresh if a transaction modified the window state,
+		// a new buffer was latched, or if HWC has requested a full
+		// repaint
+		handleMessageRefresh();
+		
+	}   
+}   
+
+
 status_t SurfaceFlinger::postMessageAsync(const sp<MessageBase>& msg,
         nsecs_t reltime, uint32_t /* flags */) {
     return mEventQueue.postMessage(msg, reltime);
