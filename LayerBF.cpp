@@ -101,14 +101,16 @@ void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
 
 void LayerBF::onFrameAvailable(const BufferItem& item) {
     // Add this buffer from our internal queue tracker
+	
+    mQueueItems.clear();
     { // Autolock scope
         Mutex::Autolock lock(mQueueItemLock);
         mQueueItems.push_back(item);
     }
 
     android_atomic_inc(&mQueuedFrames);
-    //mFlinger->signalLayerUpdate();
-    mFlinger->signalPush();
+    mFlinger->signalRefresh();
+    //mFlinger->signalPush();
 }
 
 void LayerBF::onFrameReplaced(const BufferItem& item) {
@@ -275,8 +277,8 @@ Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)
         if (updateResult == BufferQueue::PRESENT_LATER) {
             // Producer doesn't want buffer to be displayed yet.  Signal a
             // layer update so we check again at the next opportunity.
-            //mFlinger->signalLayerUpdate();
-    	    mFlinger->signalPush();
+            mFlinger->signalLayerUpdate();
+    	    //mFlinger->signalPush();
             return outDirtyRegion;
         }
 
@@ -289,8 +291,8 @@ Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)
         // Decrement the queued-frames count.  Signal another event if we
         // have more frames pending.
         if (android_atomic_dec(&mQueuedFrames) > 1) {
-            //mFlinger->signalLayerUpdate();
-    	    mFlinger->signalPush();
+            mFlinger->signalLayerUpdate();
+    	    //mFlinger->signalPush();
         }
 
         if (updateResult != NO_ERROR) {
