@@ -47,6 +47,7 @@
 #include "DisplayHardware/FloatRect.h"
 #include "RenderEngine/Mesh.h"
 #include "RenderEngine/Texture.h"
+#include <cutils/sockets.h>
 
 namespace android {
 
@@ -123,7 +124,7 @@ protected:
     virtual void onFrameAvailable(const BufferItem& item);
     virtual void onFrameReplaced(const BufferItem& item);
     virtual void onSidebandStreamChanged();
-
+    int32_t mSock;
 
 
 };

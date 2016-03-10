@@ -56,7 +56,7 @@
 namespace android {
 
 // ---------------------------------------------------------------------------
-
+const String8 SOCKET_NAME("signalBF");
 
 LayerBF::LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,
         const String8& name, uint32_t w, uint32_t h, uint32_t flags)
@@ -80,6 +80,16 @@ void LayerBF::onFirstRef() {
     const sp<const DisplayDevice> hw(mFlinger->getDefaultDisplayDevice());
     updateTransformHint(hw);
     ALOGD("LayerBF onfirst Ref...");
+     //cretae local socket here.
+    if((mSock = socket_local_client(SOCKET_NAME.string(),
+                                 ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+                                 //ANDROID_SOCKET_NAMESPACE_FILESYSTEM,
+                                 SOCK_STREAM)) < 0) {    
+       ALOGE("LayerBF: create local socket fail,%s",strerror(errno));
+    } else {
+       ALOGD("LayerBF: cretae local socket success");
+    }
+       
 }
 
 LayerBF::~LayerBF() {
@@ -92,11 +102,17 @@ LayerBF::~LayerBF() {
 // ---------------------------------------------------------------------------
 
 void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
-        HWComposer::HWCLayerInterface* layer) {
-    if (layer) {
-        layer->onDisplayed();
-        mSurfaceFlingerConsumer->setReleaseFence(layer->getAndResetReleaseFence());
-    }
+		HWComposer::HWCLayerInterface* layer) {
+	char cmd[20]="SignalT";
+	if (layer) {
+		layer->onDisplayed();
+		mSurfaceFlingerConsumer->setReleaseFence(layer->getAndResetReleaseFence());
+		if(mSock >0){
+			//send signal to app layer.
+			ALOGD("send sigbf to app layer");
+			write(mSock,cmd, strlen(cmd)+1 );
+		}
+	}
 }
 
 void LayerBF::onFrameAvailable(const BufferItem& item) {
