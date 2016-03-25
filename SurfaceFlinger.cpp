@@ -771,6 +771,7 @@ void SurfaceFlinger::waitForEvent() {
 
 void SurfaceFlinger::signalTransaction() {
     mEventQueue.invalidate();
+    ALOGD("SF: transaction");
 }
 
 void SurfaceFlinger::signalLayerUpdate() {
@@ -781,10 +782,12 @@ void SurfaceFlinger::signalLayerUpdate() {
     }
     if(bypass == 0 )
     mEventQueue.invalidate();
+    ALOGD("SF: invalidate");
 }
 
 void SurfaceFlinger::signalRefresh() {
     mEventQueue.refresh();
+    ALOGD("SF: refresh");
 }
 
 status_t SurfaceFlinger::postMessageAsync(const sp<MessageBase>& msg,
