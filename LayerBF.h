@@ -42,7 +42,8 @@ public:
     * to figure out if the content or size of a surface has changed.
     *///    Region latchBuffer(bool& recomputeVisibleRegions);
     virtual Region latchBuffer(bool& recomputeVisibleRegions);
-	
+    virtual void setPerFrameData(const sp<const DisplayDevice>& hw,
+            HWComposer::HWCLayerInterface& layer);	
     virtual void onLayerDisplayed(const sp<const DisplayDevice>& hw,
             HWComposer::HWCLayerInterface* layer);
 protected:

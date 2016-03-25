@@ -86,6 +86,13 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
     mFlinger->signalRefresh();
 }
 
+void LayerBF::setPerFrameData(const sp<const DisplayDevice>& hw,
+            HWComposer::HWCLayerInterface& layer) {
+	Layer::setPerFrameData(hw,layer);
+	layer.setRecord(true);
+	ALOGD("LayerBF set record layer");
+
+}
 void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
         HWComposer::HWCLayerInterface* layer) {
 	char cmd[20]="SignalT";

@@ -1078,6 +1078,13 @@ public:
         l->releaseFenceFd = -1;
         l->planeAlpha = 0xFF;
     }
+    virtual void setRecord(bool record) {
+        if (record) {
+            getLayer()->flags |= HWC_RECORD_LAYER;
+        } else {
+            getLayer()->flags &= ~HWC_RECORD_LAYER;
+        }
+    }
     virtual void setSkip(bool skip) {
         if (skip) {
             getLayer()->flags |= HWC_SKIP_LAYER;
