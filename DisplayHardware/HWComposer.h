@@ -383,6 +383,7 @@ private:
     // invariant: mLists[0] != NULL iff mHwc != NULL
     // mLists[i>0] can be NULL. that display is to be ignored
     struct hwc_display_contents_1*  mLists[MAX_HWC_DISPLAYS];
+    struct hwc_display_contents_1*  mRecordList;//used for record layer.
     DisplayData                     mDisplayData[MAX_HWC_DISPLAYS];
     size_t                          mNumDisplays;
 

@@ -724,6 +724,27 @@ status_t HWComposer::prepare() {
     }
 
     int err = mHwc->prepare(mHwc, mNumDisplays, mLists);
+    //we record layer here, only process Primary Display.
+    DisplayData& recordDisp(mDisplayData[0]);//primary display.
+    
+    if (NULL == mRecordList) {
+	//only record one layer.
+	mRecordList =  (hwc_display_contents_1_t*)malloc( sizeof(hwc_display_contents_1_t)
+									+ sizeof(hwc_layer_1_t));
+	mRecordList->numHwLayers = 1;
+    }
+    for (size_t i=0 ; i<recordDisp.list->numHwLayers ; i++) {
+	    const hwc_layer_1_t&l = recordDisp.list->hwLayers[i];
+	    if ( l.flags && HWC_RECORD_LAYER){
+		    //record this layer.
+		ALOGD("find one record layer");
+		
+		memcpy(&mRecordList->hwLayers[0],&l,sizeof(hwc_layer_1_t));
+		ALOGD("record layer:[%p]",mRecordList->hwLayers[0].handle);
+	    }
+    }		
+
+
     ALOGE_IF(err, "HWComposer: prepare failed (%s)", strerror(-err));
 
     if (err == NO_ERROR) {
