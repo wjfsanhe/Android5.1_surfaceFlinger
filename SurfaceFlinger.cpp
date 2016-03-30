@@ -771,7 +771,7 @@ void SurfaceFlinger::waitForEvent() {
 
 void SurfaceFlinger::signalTransaction() {
     mEventQueue.invalidate();
-    ALOGD("SF: transaction");
+    //ALOGD("SF: transaction");
 }
 
 void SurfaceFlinger::signalLayerUpdate() {
@@ -782,12 +782,12 @@ void SurfaceFlinger::signalLayerUpdate() {
     }
     if(bypass == 0 )
     mEventQueue.invalidate();
-    ALOGD("SF: invalidate");
+    //ALOGD("SF: invalidate");
 }
 
 void SurfaceFlinger::signalRefresh() {
     mEventQueue.refresh();
-    ALOGD("SF: refresh");
+    //ALOGD("SF: refresh");
 }
 
 status_t SurfaceFlinger::postMessageAsync(const sp<MessageBase>& msg,
@@ -1193,6 +1193,13 @@ void SurfaceFlinger::setUpHWComposer() {
                         for (size_t i=0 ; cur!=end && i<count ; ++i, ++cur) {
                             const sp<Layer>& layer(currentLayers[i]);
                             layer->setGeometry(hw, *cur);
+			    //set record layer type
+			    ALOGD("curlayer%d[%d]:%s--%s",i,count,layer->getTypeId(),layer->getName().string());
+			    if(!strncmp(layer->getTypeId(), "LayerBF",
+                                    7)) {
+				ALOGD("find one record Layer");
+				cur->setRecord(true);
+			    } 
                             if (mDebugDisableHWC || mDebugRegion || mDaltonize || mHasColorMatrix) {
                                 cur->setSkip(true);
                             }

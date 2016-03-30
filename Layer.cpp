@@ -662,6 +662,7 @@ void Layer::setPerFrameData(const sp<const DisplayDevice>& hw,
         dirtyRect = resetOrigin.transform(tempDR);
     }
     layer.setDirtyRect(dirtyRect);
+
 #endif
 
     // NOTE: buffer can be NULL if the client never drew into this
