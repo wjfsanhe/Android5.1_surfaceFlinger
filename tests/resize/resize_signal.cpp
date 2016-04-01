@@ -40,7 +40,6 @@
 /*test*/
 
 using namespace android;
-
 //global varible
 sp<Surface> surface ;
 ssize_t bpr=0 ;
@@ -65,7 +64,12 @@ void handleConnection(int32_t fd,uint16_t *pt){
     	int64_t  start,end,end2;
 
     	char buffer[4096];
-        
+        //surface->Post();
+	//send one commit message here.
+	char cmd[25];
+	//fprintf(stderr,"Send one commit message"); 
+	//sprintf(cmd,"SignalR:%d:1440x2560III",oddEven);
+	//write(fd,cmd,strlen(cmd));
 	while(1){
 		to.tv_sec = 10;
 		to.tv_usec = 0;
@@ -97,10 +101,12 @@ void handleConnection(int32_t fd,uint16_t *pt){
 				}
 			}
 			//commit new post
-			//printf("got message:%s\n",buffer);
+			printf("got message:%s\n",buffer);
+			//write message once we got one signal.
+			char cmd[25];
 			if(NULL==pt) continue ;
 			oddEven=!oddEven;
-			//fprintf(stderr,"odd=%d\n",oddEven);
+			fprintf(stderr,"odd=%d\n",oddEven);
 			if(oddEven){
 				//fprintf(stderr,"..,%d\n",outBuffer.height);
 				android_memset16(pt, 0x07E0, bpr*outBuffer.height);
@@ -108,8 +114,10 @@ void handleConnection(int32_t fd,uint16_t *pt){
 				//fprintf(stderr,"**,%d\n",outBuffer.height);
 				android_memset16(pt, 0xF800, bpr*outBuffer.height);
 			}
+			sprintf(cmd,"SignalR:%d:1440x2560",oddEven);
+			write(fd,cmd,strlen(cmd));			
 			//usleep(500000);
-			surface->Post();
+			//surface->Post();
 
 		}
 	}
@@ -159,8 +167,8 @@ void *threadEnv(void*){
     
 
     //create server socket
-    mSock = socket_local_server("/data/data/signalBF",
-                                   ANDROID_SOCKET_NAMESPACE_FILESYSTEM,//ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+    mSock = socket_local_server("signalBF",
+                                   /*ANDROID_SOCKET_NAMESPACE_FILESYSTEM,*/ANDROID_SOCKET_NAMESPACE_ABSTRACT,
                                    SOCK_STREAM);
     //usleep(5000);
 

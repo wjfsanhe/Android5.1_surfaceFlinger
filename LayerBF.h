@@ -22,12 +22,20 @@
 #include <cutils/sockets.h>
 
 #include "Layer.h"
+#include <utils/Looper.h>
+#include <ui/GraphicBuffer.h>
+#include <gui/BufferItem.h>
 
+#include "LayerBF.h"
+#include "SurfaceFlinger.h"
+#include "DisplayDevice.h"
+#include "RenderEngine/RenderEngine.h"
+	
 // ---------------------------------------------------------------------------
 
 namespace android {
-
-class LayerBF : public Layer
+class LayerBF : public Layer,
+		public Thread
 {
 public:
                 LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,
@@ -44,13 +52,21 @@ public:
     virtual Region latchBuffer(bool& recomputeVisibleRegions);
     virtual void onLayerDisplayed(const sp<const DisplayDevice>& hw,
             HWComposer::HWCLayerInterface* layer);
+    //sync thread used to monitor commit message.
+        virtual bool threadLoop();
+
+
 protected:
     void onFirstRef();
     virtual void onFrameAvailable(const BufferItem& item);
 private:
-    uint32_t mFirstCall;	
+    sp<Looper> mLooper;
+    uint32_t mFirstCall;
+    bool  mThreadInit;
+    BufferItem  mBufferItem;	
     Region mDirtyRegion;
     int32_t mSock;	
+    static int commitBuffer(int fd, int events, void* data);
 };
 
 // ---------------------------------------------------------------------------

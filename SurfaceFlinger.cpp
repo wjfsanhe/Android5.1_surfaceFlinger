@@ -787,7 +787,7 @@ void SurfaceFlinger::signalLayerUpdate() {
 
 void SurfaceFlinger::signalRefresh() {
     mEventQueue.refresh();
-    //ALOGD("SF: refresh");
+    ALOGD("SF: refresh");
 }
 
 status_t SurfaceFlinger::postMessageAsync(const sp<MessageBase>& msg,
@@ -968,13 +968,18 @@ void SurfaceFlinger::setUpTiledDr() {
 #endif
 void SurfaceFlinger::handleMessageRefresh() {
     ATRACE_CALL();
+    ALOGD("%s 1",__func__);
     preComposition();
+    ALOGD("%s 2",__func__);
     rebuildLayerStacks();
+    ALOGD("%s 3",__func__);
     setUpHWComposer();
+    ALOGD("%s 4",__func__);
 #ifdef QCOM_BSP
     setUpTiledDr();
 #endif
     doDebugFlashRegions();
+    ALOGD("%s 5",__func__);
     doComposition();
     postComposition();
 }

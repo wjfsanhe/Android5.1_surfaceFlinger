@@ -331,7 +331,9 @@ public:
 private:
     void loadHwcModule();
     int loadFbHalModule();
-
+    //commit for vr mode
+    status_t VRCommit();
+    
     LayerListIterator getLayerIterator(int32_t id, size_t index);
 
     struct cb_context;

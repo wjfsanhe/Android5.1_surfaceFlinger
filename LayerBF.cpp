@@ -17,16 +17,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <sys/types.h>
-
+#include <cutils/iosched_policy.h>
 #include <utils/Errors.h>
 #include <utils/Log.h>
 
-#include <ui/GraphicBuffer.h>
 
 #include "LayerBF.h"
-#include "SurfaceFlinger.h"
-#include "DisplayDevice.h"
-#include "RenderEngine/RenderEngine.h"
 
 namespace android {
 // ---------------------------------------------------------------------------
@@ -35,7 +31,8 @@ const String8 SOCKET_NAME("signalBF");
 LayerBF::LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,
         const String8& name, uint32_t w, uint32_t h, uint32_t flags)
     : Layer(flinger, client, name, w, h, flags) {
- 	mFirstCall=1;
+ 	mFirstCall = 1;
+	mThreadInit = true; 
 }
 
 LayerBF::~LayerBF() {
@@ -69,10 +66,31 @@ void LayerBF::onFirstRef() {
     } else {
 	ALOGD("LayerBF: cretae local socket success");
     }
-	
-
+    
+    run("LayerBFMThread", PRIORITY_URGENT_DISPLAY + PRIORITY_MORE_FAVORABLE);
+    android_set_rt_ioprio(getTid(), 1); 
     ALOGE("LayerBF:**on first REF\n") ;
 }
+
+int  LayerBF::commitBuffer(int fd, int events, void* data) {
+
+    LayerBF* layer = reinterpret_cast<LayerBF*>(data);
+    ALOGD("LayerBF: %s-get commit Buffer request,mSock[%d],requestfd[%d]\n",
+		layer->getTypeId(),
+		layer->mSock,fd);
+    char cmd[25];
+    read(fd,cmd,25);
+    ALOGD("LayerBF: gotMessage:%s",cmd);
+    
+	layer->mQueueItems.clear();
+	layer->mQueueItems.push_back(layer->mBufferItem);
+	//android_atomic_inc(&layer->mQueuedFrames);
+    	//mFlinger->signalLayerUpdate();
+    	layer->mFlinger->signalRefresh();
+    layer->mLooper->pollOnce(-1);
+    return 0;
+}
+
 void LayerBF::onFrameAvailable(const BufferItem& item) {
     // Add this buffer from our internal queue tracker
     { // Autolock scope
@@ -81,6 +99,7 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
 	mQueueItems.push_back(item);
     }
     ALOGD("LayerBF new frame coming");
+    memcpy(&mBufferItem,&item,sizeof(BufferItem));
     android_atomic_inc(&mQueuedFrames);
     //mFlinger->signalLayerUpdate();
     mFlinger->signalRefresh();
@@ -88,7 +107,7 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
 void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
         HWComposer::HWCLayerInterface* layer) {
 	char cmd[20]="SignalT";
-    //ALOGD("layered displayed ,callback trigger");
+    ALOGD("layered displayed ,callback trigger");
     if (layer) {
         layer->onDisplayed();
 	sp<Fence> waitFence=layer->getAndResetReleaseFence();
@@ -97,7 +116,7 @@ void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
 	//if(status == -ETIME) ALOGD ("LayerBF fence timeout");
 	if(mSock >0){
 		//send signal to app layer.
-		//ALOGD("send sigbf to app layer");
+		ALOGD("send sigbf to app layer");
 		write(mSock,cmd, strlen(cmd)+1 );
 	}
     }
@@ -113,10 +132,32 @@ Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)
 		android_atomic_dec(&mQueuedFrames);
 		BufferQueue::BufferItem item;
         	mSurfaceFlingerConsumer->acquireBufferLocked(&item,0);
-		ALOGD("LayerBF:acquire buffer %d",item.mBuf);	
+		//ALOGD("LayerBF:acquire buffer %d",item.mBuf);	
 	}
 	return mDirtyRegion;
 }
+
+
+
+// ---------------------------------------------------------------------------
+
+bool LayerBF::threadLoop() {
+    ALOGD("LayerBF: threadloop");
+    if(mThreadInit){
+	mLooper = Looper::getForThread();
+   	if (mLooper == NULL) {
+        	mLooper = new Looper(false);
+        	Looper::setForThread(mLooper);
+    	}
+	mLooper->addFd(mSock, 0, Looper::EVENT_INPUT,
+        		LayerBF::commitBuffer, this);
+	mThreadInit = false;
+	mLooper->pollOnce(-1);
+    }
+    return true;
+}
+
+
 
 
 // ---------------------------------------------------------------------------

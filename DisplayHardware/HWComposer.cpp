@@ -91,6 +91,7 @@ HWComposer::HWComposer(
       mCBContext(new cb_context),
       mEventHandler(handler),
       mDebugForceFakeVSync(false),
+      mRecordList(NULL),
       mVDSEnabled(false)
 {
     for (size_t i =0 ; i<MAX_HWC_DISPLAYS ; i++) {
@@ -725,22 +726,23 @@ status_t HWComposer::prepare() {
 
     int err = mHwc->prepare(mHwc, mNumDisplays, mLists);
     //we record layer here, only process Primary Display.
-    DisplayData& recordDisp(mDisplayData[0]);//primary display.
+    DisplayData &recordDisp(mDisplayData[0]);//primary display.
     
     if (NULL == mRecordList) {
 	//only record one layer.
+	ALOGD("Create record list");
 	mRecordList =  (hwc_display_contents_1_t*)malloc( sizeof(hwc_display_contents_1_t)
 									+ sizeof(hwc_layer_1_t));
 	mRecordList->numHwLayers = 1;
     }
     for (size_t i=0 ; i<recordDisp.list->numHwLayers ; i++) {
-	    const hwc_layer_1_t&l = recordDisp.list->hwLayers[i];
-	    if ( l.flags && HWC_RECORD_LAYER){
-		    //record this layer.
-		ALOGD("find one record layer");
-		
-		memcpy(&mRecordList->hwLayers[0],&l,sizeof(hwc_layer_1_t));
-		ALOGD("record layer:[%p]",mRecordList->hwLayers[0].handle);
+	    const hwc_layer_1_t* l = &recordDisp.list->hwLayers[i];
+	    if ( l->flags & HWC_RECORD_LAYER ){
+		//record this layer.
+		ALOGD("find one record layer [%d-%d]",recordDisp.list->numHwLayers,i);
+		memset(&mRecordList->hwLayers[0],0,sizeof(hwc_layer_1_t));	
+		memcpy(&mRecordList->hwLayers[0],l,sizeof(hwc_layer_1_t));
+		ALOGD("record layer:[%p]-0x%X",mRecordList->hwLayers[0].handle,mRecordList->hwLayers[0].flags);
 	    }
     }		
 
@@ -851,6 +853,44 @@ sp<Fence> HWComposer::getAndResetReleaseFence(int32_t id) {
     return fd >= 0 ? new Fence(fd) : Fence::NO_FENCE;
 }
 
+status_t HWComposer::VRCommit() {
+    int err = NO_ERROR;
+    if (NULL == mRecordList) return err;
+    if (mHwc) {
+        if (!hwcHasApiVersion(mHwc, HWC_DEVICE_API_VERSION_1_1)) {
+            // On version 1.0, the OpenGL ES target surface is communicated
+            // by the (dpy, sur) fields and we are guaranteed to have only
+            // a single display.
+            mLists[0]->dpy = eglGetCurrentDisplay();
+            mLists[0]->sur = eglGetCurrentSurface(EGL_DRAW);
+        }
+
+        /*for (size_t i=VIRTUAL_DISPLAY_ID_BASE; i<mNumDisplays; i++) {
+            DisplayData& disp(mDisplayData[i]);
+            if (disp.outbufHandle) {
+                mLists[i]->outbuf = disp.outbufHandle;
+                mLists[i]->outbufAcquireFenceFd =
+                        disp.outbufAcquireFence->dup();
+            }
+        }*/
+	//only commit record list .
+        err = mHwc->set(mHwc, 1, &mRecordList);
+
+        /*for (size_t i=0 ; i<mNumDisplays ; i++) {
+            DisplayData& disp(mDisplayData[i]);
+            disp.lastDisplayFence = disp.lastRetireFence;
+            disp.lastRetireFence = Fence::NO_FENCE;
+            if (disp.list) {
+                if (disp.list->retireFenceFd != -1) {
+                    disp.lastRetireFence = new Fence(disp.list->retireFenceFd);
+                    disp.list->retireFenceFd = -1;
+                }
+                disp.list->flags &= ~HWC_GEOMETRY_CHANGED;
+            }
+        }*/
+    }
+    return (status_t)err;
+}
 status_t HWComposer::commit() {
     int err = NO_ERROR;
     if (mHwc) {
