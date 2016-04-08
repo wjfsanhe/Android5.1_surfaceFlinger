@@ -737,6 +737,7 @@ status_t HWComposer::prepare() {
     }
     for (size_t i=0 ; i<recordDisp.list->numHwLayers ; i++) {
 	    const hwc_layer_1_t* l = &recordDisp.list->hwLayers[i];
+	    ALOGD("flags:0x%x",l->flags);
 	    if ( l->flags & HWC_RECORD_LAYER ){
 		//record this layer.
 		ALOGD("find one record layer [%d-%d]",recordDisp.list->numHwLayers,i);
@@ -1142,6 +1143,7 @@ public:
     virtual void setRecord(bool record) {
         if (record) {
             getLayer()->flags |= HWC_RECORD_LAYER;
+	    ALOGD("set one record layer ****************");
         } else {
             getLayer()->flags &= ~HWC_RECORD_LAYER;
         }

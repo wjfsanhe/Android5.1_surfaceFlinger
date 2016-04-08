@@ -68,11 +68,17 @@ void handleConnection(int32_t fd,uint16_t *pt){
 	//send one commit message here.
 	char cmd[25];
 	//fprintf(stderr,"Send one commit message"); 
-	//sprintf(cmd,"SignalR:%d:1440x2560III",oddEven);
-	//write(fd,cmd,strlen(cmd));
+	/*while(1){
+		sprintf(cmd,"SignalR:%d:1440x2560III",oddEven);
+		write(fd,cmd,strlen(cmd));
+		usleep(10000);
+		fprintf(stderr,cmd);
+		fprintf(stderr,"\n");
+	}*/
+		android_memset16(pt, 0x00, bpr*outBuffer.height);
 	while(1){
-		to.tv_sec = 10;
-		to.tv_usec = 0;
+		to.tv_sec = 0;
+		to.tv_usec = 16000;
 
 		FD_ZERO(&read_fds);
 		FD_SET(fd, &read_fds);
@@ -81,7 +87,21 @@ void handleConnection(int32_t fd,uint16_t *pt){
 			fprintf(stderr, "Error in select (%s)\n", strerror(errno));
 			break;
 		} else if (!rc) {
-			fprintf(stderr, "[TIMEOUT]\n");
+			//fprintf(stderr, "[TIMEOUT]\n");
+
+			//write message once we got one signal.
+                        oddEven=!oddEven;
+                        //fprintf(stderr,"odd=%d\n",oddEven);
+		//	android_memset16(pt, 0x00, bpr*outBuffer.height);
+                        if(!oddEven){
+                                //fprintf(stderr,"..,%d\n",outBuffer.height);
+                                android_memset16(pt, 0x07E0, bpr*outBuffer.height/4);
+                        } else {
+                                //fprintf(stderr,"**,%d\n",outBuffer.height);
+                                android_memset16(pt+bpr*outBuffer.height/4, 0xF800, bpr*outBuffer.height/4);
+                        }
+                        sprintf(cmd,"SignalR:%d:1440x2560",oddEven);
+                        write(fd,cmd,strlen(cmd));
 			continue;
 		} else if (FD_ISSET(fd, &read_fds)) {
 			
@@ -130,7 +150,7 @@ void* threadSignal(uint16_t* pt){
 	surface->lock(&outBuffer, NULL);  
 	bpr = outBuffer.stride * bytesPerPixel(outBuffer.format);
 
-
+        printf("----------------outBuffer.height=%d\n",outBuffer.height);
 	android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
 	surface->Post();
 
@@ -179,7 +199,7 @@ void *threadEnv(void*){
     sp<SurfaceComposerClient> client = new SurfaceComposerClient();
     printf(" Begin resize work\n"); 
     sp<SurfaceControl> surfaceControl = client->createSurface(String8("resize"),
-            1440, 2560, PIXEL_FORMAT_RGB_565, 0x40000);
+            1440, 5120, PIXEL_FORMAT_RGB_565, 0x40000);
     surface = surfaceControl->getSurface();
 
     SurfaceComposerClient::openGlobalTransaction();

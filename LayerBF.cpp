@@ -36,6 +36,7 @@ LayerBF::LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,
 }
 
 LayerBF::~LayerBF() {
+	ALOGD("LayerBF destroyed~~");
 }
 
 
@@ -81,14 +82,18 @@ int  LayerBF::commitBuffer(int fd, int events, void* data) {
     char cmd[25];
     read(fd,cmd,25);
     ALOGD("LayerBF: gotMessage:%s",cmd);
-    
+    if(strncmp(cmd,"SignalR",7)){
+	ALOGD("receive exception message");
+	return 0;
+    } 
 	layer->mQueueItems.clear();
 	layer->mQueueItems.push_back(layer->mBufferItem);
+	ALOGD("LayerBF commit frame ,%d",layer->mQueuedFrames);
 	//android_atomic_inc(&layer->mQueuedFrames);
+	android_atomic_release_store(0,&layer->mQueuedFrames);
     	//mFlinger->signalLayerUpdate();
     	layer->mFlinger->signalRefresh();
-    layer->mLooper->pollOnce(-1);
-    return 0;
+    return 1;
 }
 
 void LayerBF::onFrameAvailable(const BufferItem& item) {
@@ -98,7 +103,7 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
 	mQueueItems.clear();
 	mQueueItems.push_back(item);
     }
-    ALOGD("LayerBF new frame coming");
+    ALOGD("LayerBF new frame coming,%d",mQueuedFrames);
     memcpy(&mBufferItem,&item,sizeof(BufferItem));
     android_atomic_inc(&mQueuedFrames);
     //mFlinger->signalLayerUpdate();
@@ -116,8 +121,8 @@ void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& /* hw */,
 	//if(status == -ETIME) ALOGD ("LayerBF fence timeout");
 	if(mSock >0){
 		//send signal to app layer.
-		ALOGD("send sigbf to app layer");
-		write(mSock,cmd, strlen(cmd)+1 );
+		//ALOGD("send sigbf to app layer");
+		//write(mSock,cmd, strlen(cmd)+1 );
 	}
     }
 }
@@ -132,7 +137,7 @@ Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)
 		android_atomic_dec(&mQueuedFrames);
 		BufferQueue::BufferItem item;
         	mSurfaceFlingerConsumer->acquireBufferLocked(&item,0);
-		//ALOGD("LayerBF:acquire buffer %d",item.mBuf);	
+		ALOGD("LayerBF:acquire buffer %d",item.mBuf);	
 	}
 	return mDirtyRegion;
 }
@@ -152,8 +157,8 @@ bool LayerBF::threadLoop() {
 	mLooper->addFd(mSock, 0, Looper::EVENT_INPUT,
         		LayerBF::commitBuffer, this);
 	mThreadInit = false;
-	mLooper->pollOnce(-1);
     }
+    mLooper->pollOnce(-1);
     return true;
 }
 

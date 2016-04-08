@@ -1056,6 +1056,7 @@ void SurfaceFlinger::preComposition()
     const size_t count = layers.size();
     for (size_t i=0 ; i<count ; i++) {
         if (layers[i]->onPreComposition()) {
+	    ALOGD("++++preComposition %s",layers[i]->getTypeId());
             needExtraInvalidate = true;
         }
     }
@@ -1202,7 +1203,7 @@ void SurfaceFlinger::setUpHWComposer() {
 			    ALOGD("curlayer%d[%d]:%s--%s",i,count,layer->getTypeId(),layer->getName().string());
 			    if(!strncmp(layer->getTypeId(), "LayerBF",
                                     7)) {
-				ALOGD("find one record Layer");
+				ALOGD("find one record Layer,%s",layer->getTypeId());
 				cur->setRecord(true);
 			    } 
                             if (mDebugDisableHWC || mDebugRegion || mDaltonize || mHasColorMatrix) {
