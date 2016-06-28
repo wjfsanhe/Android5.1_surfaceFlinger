@@ -11,7 +11,9 @@ ANDROID_BARRIER_H	Barrier.h	18;"	d
 ANDROID_DISPLAY_DEVICE_H	DisplayDevice.h	18;"	d
 ANDROID_DISPSYNC_H	DispSync.h	18;"	d
 ANDROID_EVENTCONTROLTHREAD_H	EventControlThread.h	18;"	d
+ANDROID_FB_FENCE_H_	tests/resize/fbFence.h	7;"	d
 ANDROID_FRAMETRACKER_H	FrameTracker.h	18;"	d
+ANDROID_LAYER_BF_H	LayerBF.h	18;"	d
 ANDROID_LAYER_BLUR_H	LayerBlur.h	21;"	d
 ANDROID_LAYER_DIM_H	LayerDim.h	18;"	d
 ANDROID_LAYER_H	Layer.h	18;"	d
@@ -32,15 +34,23 @@ ANDROID_SURFACEFLINGERCONSUMER_H	SurfaceFlingerConsumer.h	18;"	d
 ANDROID_SURFACE_FLINGER_COLORIZER_H	Colorizer.h	18;"	d
 ANDROID_SURFACE_FLINGER_EVENT_THREAD_H	EventThread.h	18;"	d
 ANDROID_SURFACE_FLINGER_H	SurfaceFlinger.h	18;"	d
+ANDROID_SURFACE_FLINGER_VR_THREAD_H	DisplayHardware/VRThread.h	18;"	d
 ANDROID_TRANSFORM_H	Transform.h	18;"	d
 ATRACE_TAG	DispSync.cpp	17;"	d	file:
 ATRACE_TAG	DisplayHardware/HWComposer.cpp	17;"	d	file:
+ATRACE_TAG	DisplayHardware/VRThread.cpp	17;"	d	file:
 ATRACE_TAG	EventThread.cpp	17;"	d	file:
 ATRACE_TAG	Layer.cpp	17;"	d	file:
 ATRACE_TAG	LayerBlur.cpp	20;"	d	file:
 ATRACE_TAG	RenderEngine/GLES20RenderEngine.cpp	17;"	d	file:
 ATRACE_TAG	SurfaceFlinger.cpp	18;"	d	file:
 ATRACE_TAG	SurfaceFlingerConsumer.cpp	17;"	d	file:
+ATRACE_TAG	tests/resize/localsocket.cpp	16;"	d	file:
+ATRACE_TAG	tests/resize/resize.cpp	16;"	d	file:
+ATRACE_TAG	tests/resize/resize_double.cpp	17;"	d	file:
+ATRACE_TAG	tests/resize/resize_lr.cpp	16;"	d	file:
+ATRACE_TAG	tests/resize/resize_signal.cpp	16;"	d	file:
+ATRACE_TAG	tests/resize/resize_sync.cpp	16;"	d	file:
 Adder	RenderEngine/RenderEngine.cpp	/^        Adder(EGLAttributeVector& v, EGLint attribute)$/;"	f	class:android::EGLAttributeVector::Adder	file:
 Adder	RenderEngine/RenderEngine.cpp	/^    class Adder {$/;"	c	class:android::EGLAttributeVector	file:
 Attribute	RenderEngine/RenderEngine.cpp	/^        Attribute() {};$/;"	f	struct:android::EGLAttributeVector::Attribute
@@ -84,10 +94,10 @@ DBG_STATE_GLES_DONE	DisplayHardware/VirtualDisplaySurface.h	/^        DBG_STATE_
 DBG_STATE_HWC	DisplayHardware/VirtualDisplaySurface.h	/^        DBG_STATE_HWC,$/;"	e	enum:android::VirtualDisplaySurface::DbgState
 DBG_STATE_IDLE	DisplayHardware/VirtualDisplaySurface.h	/^        DBG_STATE_IDLE,$/;"	e	enum:android::VirtualDisplaySurface::DbgState
 DBG_STATE_PREPARED	DisplayHardware/VirtualDisplaySurface.h	/^        DBG_STATE_PREPARED,$/;"	e	enum:android::VirtualDisplaySurface::DbgState
-DEBUG_RESIZE	Layer.cpp	54;"	d	file:
-DEBUG_SCREENSHOTS	SurfaceFlinger.cpp	101;"	d	file:
+DEBUG_RESIZE	Layer.cpp	53;"	d	file:
+DEBUG_SCREENSHOTS	SurfaceFlinger.cpp	103;"	d	file:
 DISPLAY_ATTRIBUTES	DisplayHardware/HWComposer.cpp	/^static const uint32_t DISPLAY_ATTRIBUTES[] = {$/;"	m	namespace:android	file:
-DISPLAY_COUNT	SurfaceFlinger.cpp	94;"	d	file:
+DISPLAY_COUNT	SurfaceFlinger.cpp	96;"	d	file:
 DISPLAY_EXTERNAL	DisplayDevice.h	/^        DISPLAY_EXTERNAL    = HWC_DISPLAY_EXTERNAL,$/;"	e	enum:android::DisplayDevice::DisplayType
 DISPLAY_ID_INVALID	DisplayDevice.h	/^        DISPLAY_ID_INVALID = -1,$/;"	e	enum:android::DisplayDevice::DisplayType
 DISPLAY_PRIMARY	DisplayDevice.h	/^        DISPLAY_PRIMARY     = HWC_DISPLAY_PRIMARY,$/;"	e	enum:android::DisplayDevice::DisplayType
@@ -130,9 +140,13 @@ EventHandler	DisplayHardware/HWComposer.h	/^    class EventHandler {$/;"	c	class
 EventListener	DispSync.cpp	/^    struct EventListener {$/;"	s	class:android::DispSyncThread	file:
 EventLog	EventLog/EventLog.cpp	/^EventLog::EventLog() {$/;"	f	class:android::EventLog
 EventLog	EventLog/EventLog.h	/^class EventLog : public Singleton<EventLog> {$/;"	c	namespace:android
+EventThread	DisplayHardware/VRThread.cpp	/^VRThread::EventThread(HWComposer& hwc)$/;"	f	class:android::VRThread
 EventThread	EventThread.cpp	/^EventThread::EventThread(const sp<VSyncSource>& src)$/;"	f	class:android::EventThread
 EventThread	EventThread.h	/^class EventThread : public Thread, private VSyncSource::Callback {$/;"	c	namespace:android
-FBIO_WAITFORVSYNC	tests/waitforvsync/waitforvsync.cpp	28;"	d	file:
+FBFence	tests/resize/fbFence.cpp	/^FBFence::FBFence(){$/;"	f	class:android::FBFence
+FBFence	tests/resize/fbFence.h	/^class FBFence:public Fence {$/;"	c	namespace:android
+FBIO_WAITFORVSYNC	tests/resize/testEgl.cpp	61;"	d	file:
+FBIO_WAITFORVSYNC	tests/waitforvsync/waitforvsync.cpp	29;"	d	file:
 FBO	LayerBlur.h	/^        FBO() : fbo(0), width(0), height(0) {}$/;"	f	class:android::LayerBlur::FBO
 FBO	LayerBlur.h	/^    class FBO {$/;"	c	class:android::LayerBlur
 FLIP_H	Transform.h	/^                FLIP_H  = HAL_TRANSFORM_FLIP_H,$/;"	e	enum:android::Transform::orientation_flags
@@ -172,7 +186,7 @@ GraphicProducerWrapper	SurfaceFlinger.cpp	/^    GraphicProducerWrapper(const sp<
 GraphicProducerWrapper	SurfaceFlinger.cpp	/^class GraphicProducerWrapper : public BBinder, public MessageHandler {$/;"	c	namespace:android	file:
 Group	RenderEngine/GLES20RenderEngine.h	/^        Group() : width(0), height(0) { }$/;"	f	struct:android::GLES20RenderEngine::Group
 Group	RenderEngine/GLES20RenderEngine.h	/^    struct Group {$/;"	s	class:android::GLES20RenderEngine
-HARDWARE_IS_DEVICE_FORMAT	Layer.cpp	919;"	d	file:
+HARDWARE_IS_DEVICE_FORMAT	Layer.cpp	920;"	d	file:
 HWCLayer	DisplayHardware/HWComposer.h	/^    class HWCLayer : public HWCLayerInterface {$/;"	c	class:android::HWComposer
 HWCLayerInterface	DisplayHardware/HWComposer.h	/^    class HWCLayerInterface {$/;"	c	class:android::HWComposer
 HWCLayerVersion1	DisplayHardware/HWComposer.cpp	/^    HWCLayerVersion1(struct hwc_composer_device_1* hwc, hwc_layer_1_t* layer)$/;"	f	class:android::HWCLayerVersion1
@@ -204,13 +218,13 @@ LOCAL_MODULE	Android.mk	/^LOCAL_MODULE:= libsurfaceflinger$/;"	m
 LOCAL_MODULE	Android.mk	/^LOCAL_MODULE:= libsurfaceflinger_ddmconnection$/;"	m
 LOCAL_MODULE	Android.mk	/^LOCAL_MODULE:= surfaceflinger$/;"	m
 LOCAL_MODULE	tests/Android.mk	/^LOCAL_MODULE := SurfaceFlinger_test$/;"	m
-LOCAL_MODULE	tests/resize/Android.mk	/^LOCAL_MODULE:= test-resize$/;"	m
+LOCAL_MODULE	tests/resize/Android.mk	/^LOCAL_MODULE:= resize$/;"	m
 LOCAL_MODULE	tests/screencap/Android.mk	/^LOCAL_MODULE:= test-screencap$/;"	m
 LOCAL_MODULE	tests/transform/Android.mk	/^LOCAL_MODULE:= test-transform$/;"	m
-LOCAL_MODULE	tests/vsync/Android.mk	/^LOCAL_MODULE:= test-vsync-events$/;"	m
-LOCAL_MODULE	tests/waitforvsync/Android.mk	/^LOCAL_MODULE:= test-waitforvsync$/;"	m
+LOCAL_MODULE	tests/vsync/Android.mk	/^LOCAL_MODULE:= vsync$/;"	m
+LOCAL_MODULE	tests/waitforvsync/Android.mk	/^LOCAL_MODULE:= vsync$/;"	m
 LOCAL_MODULE_TAGS	tests/Android.mk	/^LOCAL_MODULE_TAGS := tests$/;"	m
-LOCAL_MODULE_TAGS	tests/resize/Android.mk	/^LOCAL_MODULE_TAGS := tests$/;"	m
+LOCAL_MODULE_TAGS	tests/resize/Android.mk	/^LOCAL_MODULE_TAGS := resize$/;"	m
 LOCAL_MODULE_TAGS	tests/screencap/Android.mk	/^LOCAL_MODULE_TAGS := tests$/;"	m
 LOCAL_MODULE_TAGS	tests/transform/Android.mk	/^LOCAL_MODULE_TAGS := tests$/;"	m
 LOCAL_MODULE_TAGS	tests/vsync/Android.mk	/^LOCAL_MODULE_TAGS := tests$/;"	m
@@ -239,8 +253,14 @@ LOCAL_SRC_FILES	tests/waitforvsync/Android.mk	/^LOCAL_SRC_FILES:= \\$/;"	m
 LOCAL_WHOLE_STATIC_LIBRARIES	Android.mk	/^LOCAL_WHOLE_STATIC_LIBRARIES := libsigchain$/;"	m
 LOGTAG_SF_FRAME_DUR	EventLog/EventLog.h	/^    enum { LOGTAG_SF_FRAME_DUR = 60100 };$/;"	e	enum:android::EventLog::__anon18
 LOG_FRAME_STATS_PERIOD	SurfaceFlinger.h	/^    enum { LOG_FRAME_STATS_PERIOD =  30*60*60 };$/;"	e	enum:android::SurfaceFlinger::__anon8
+LOG_TAG	MonitoredProducer.cpp	20;"	d	file:
+LOG_TAG	tests/resize/eglTest.cpp	1;"	d	file:
+LOG_TAG	tests/resize/fbFence.cpp	6;"	d	file:
+LOG_TAG	tests/resize/testEgl.cpp	1;"	d	file:
 Layer	Layer.cpp	/^Layer::Layer(SurfaceFlinger* flinger, const sp<Client>& client,$/;"	f	class:android::Layer
 Layer	Layer.h	/^class Layer : public SurfaceFlingerConsumer::ContentsChangedListener {$/;"	c	namespace:android
+LayerBF	LayerBF.cpp	/^LayerBF::LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,$/;"	f	class:android::LayerBF
+LayerBF	LayerBF.h	/^class LayerBF : public Layer,$/;"	c	namespace:android
 LayerBlur	LayerBlur.cpp	/^LayerBlur::LayerBlur(SurfaceFlinger* flinger, const sp<Client>& client,$/;"	f	class:android::LayerBlur
 LayerBlur	LayerBlur.h	/^class LayerBlur : public Layer$/;"	c	namespace:android
 LayerCleaner	Layer.cpp	/^Layer::LayerCleaner::LayerCleaner(const sp<SurfaceFlinger>& flinger,$/;"	f	class:android::Layer::LayerCleaner
@@ -257,11 +277,11 @@ LayerVector	SurfaceFlinger.cpp	/^SurfaceFlinger::LayerVector::LayerVector(const 
 LayerVector	SurfaceFlinger.h	/^    class LayerVector : public SortedVector< sp<Layer> > {$/;"	c	class:android::SurfaceFlinger
 MAGENTA	Colorizer.h	/^        MAGENTA = 35,$/;"	e	enum:android::Colorizer::color
 MAX_HWC_DISPLAYS	DisplayHardware/HWComposer.h	/^        MAX_HWC_DISPLAYS = HWC_NUM_DISPLAY_TYPES,$/;"	e	enum:android::HWComposer::__anon4
-MAX_LAYER_COUNT	DisplayHardware/HWComposer.h	35;"	d
+MAX_LAYER_COUNT	DisplayHardware/HWComposer.h	37;"	d
 MAX_RESYNC_SAMPLES	DispSync.h	/^    enum { MAX_RESYNC_SAMPLES = 32 };$/;"	e	enum:android::DispSync::__anon21
 MAX_RESYNC_SAMPLES_WITHOUT_PRESENT	DispSync.h	/^    enum { MAX_RESYNC_SAMPLES_WITHOUT_PRESENT = 4 };$/;"	e	enum:android::DispSync::__anon24
-MIN_DIRTYRECT_COUNT	SurfaceFlinger.cpp	95;"	d	file:
-MIN_HWC_HEADER_VERSION	DisplayHardware/HWComposer.cpp	54;"	d	file:
+MIN_DIRTYRECT_COUNT	SurfaceFlinger.cpp	97;"	d	file:
+MIN_HWC_HEADER_VERSION	DisplayHardware/HWComposer.cpp	57;"	d	file:
 MIN_RESYNC_SAMPLES_FOR_UPDATE	DispSync.h	/^    enum { MIN_RESYNC_SAMPLES_FOR_UPDATE = 3 };$/;"	e	enum:android::DispSync::__anon22
 MSG_API_CALL	SurfaceFlinger.cpp	/^        MSG_API_CALL,$/;"	e	enum:android::GraphicProducerWrapper::__anon2	file:
 MSG_EXIT	SurfaceFlinger.cpp	/^        MSG_EXIT$/;"	e	enum:android::GraphicProducerWrapper::__anon2	file:
@@ -277,7 +297,7 @@ MonitoredProducer	MonitoredProducer.h	/^class MonitoredProducer : public IGraphi
 NO_LAYER_STACK	DisplayDevice.h	/^        NO_LAYER_STACK = 0xFFFFFFFF,$/;"	e	enum:android::DisplayDevice::__anon15
 NUM_BUILTIN_DISPLAYS	DisplayHardware/HWComposer.h	/^        NUM_BUILTIN_DISPLAYS = HWC_NUM_PHYSICAL_DISPLAY_TYPES,$/;"	e	enum:android::HWComposer::__anon4
 NUM_BUILTIN_DISPLAY_TYPES	DisplayDevice.h	/^        NUM_BUILTIN_DISPLAY_TYPES = HWC_NUM_PHYSICAL_DISPLAY_TYPES,$/;"	e	enum:android::DisplayDevice::DisplayType
-NUM_DISPLAY_ATTRIBUTES	DisplayHardware/HWComposer.cpp	365;"	d	file:
+NUM_DISPLAY_ATTRIBUTES	DisplayHardware/HWComposer.cpp	379;"	d	file:
 NUM_FRAMEBUFFER_SURFACE_BUFFERS	DisplayHardware/FramebufferSurface.cpp	40;"	d	file:
 NUM_FRAME_BUCKETS	FrameTracker.h	/^    enum { NUM_FRAME_BUCKETS = 7 };$/;"	e	enum:android::FrameTracker::__anon11
 NUM_FRAME_RECORDS	FrameTracker.h	/^    enum { NUM_FRAME_RECORDS = 128 };$/;"	e	enum:android::FrameTracker::__anon10
@@ -286,6 +306,8 @@ OPACITY_MASK	RenderEngine/ProgramCache.h	/^            OPACITY_MASK            =
 OPACITY_OPAQUE	RenderEngine/ProgramCache.h	/^            OPACITY_OPAQUE          =       0x00000002,$/;"	e	enum:android::ProgramCache::Key::__anon20
 OPACITY_TRANSLUCENT	RenderEngine/ProgramCache.h	/^            OPACITY_TRANSLUCENT     =       0x00000000,$/;"	e	enum:android::ProgramCache::Key::__anon20
 OPENED	Barrier.h	/^    enum { OPENED, CLOSED };$/;"	e	enum:android::Barrier::__anon1
+OpLine	tests/resize/testEgl.cpp	/^status_t  OpLine(){$/;"	f
+OpScreen	tests/resize/testEgl.cpp	/^status_t OpScreen(){$/;"	f
 PARTIAL_UPDATES	DisplayDevice.h	/^        PARTIAL_UPDATES = 0x00020000, \/\/ video driver feature$/;"	e	enum:android::DisplayDevice::__anon14
 PLANE_ALPHA_EQ_ONE	RenderEngine/ProgramCache.h	/^            PLANE_ALPHA_EQ_ONE      =       0x00000000,$/;"	e	enum:android::ProgramCache::Key::__anon20
 PLANE_ALPHA_LT_ONE	RenderEngine/ProgramCache.h	/^            PLANE_ALPHA_LT_ONE      =       0x00000004,$/;"	e	enum:android::ProgramCache::Key::__anon20
@@ -317,6 +339,7 @@ SF_RENDER_ENGINE_MESH_H	RenderEngine/Mesh.h	18;"	d
 SF_RENDER_ENGINE_PROGRAMCACHE_H	RenderEngine/ProgramCache.h	18;"	d
 SF_RENDER_ENGINE_PROGRAM_H	RenderEngine/Program.h	18;"	d
 SF_RENDER_ENGINE_TEXTURE_H	RenderEngine/Texture.h	21;"	d
+SOCKET_NAME	tests/resize/localsocket.cpp	46;"	d	file:
 SOURCE_SCRATCH	DisplayHardware/VirtualDisplaySurface.h	/^    enum Source {SOURCE_SINK = 0, SOURCE_SCRATCH = 1};$/;"	e	enum:android::VirtualDisplaySurface::Source
 SOURCE_SINK	DisplayHardware/VirtualDisplaySurface.h	/^    enum Source {SOURCE_SINK = 0, SOURCE_SCRATCH = 1};$/;"	e	enum:android::VirtualDisplaySurface::Source
 STORAGE_MAX_SIZE	EventLog/EventLog.h	/^        enum { STORAGE_MAX_SIZE = 128 };$/;"	e	enum:android::EventLog::TagBuffer::__anon17
@@ -357,6 +380,7 @@ TearDown	tests/Transaction_test.cpp	/^    virtual void TearDown() {$/;"	f	class:
 Texture	RenderEngine/Texture.cpp	/^Texture::Texture() :$/;"	f	class:android::Texture
 Texture	RenderEngine/Texture.cpp	/^Texture::Texture(Target textureTarget, uint32_t textureName) :$/;"	f	class:android::Texture
 Texture	RenderEngine/Texture.h	/^class Texture {$/;"	c	namespace:android
+TimerThread	tests/resize/testEgl.cpp	/^void*  TimerThread (void*){$/;"	f
 Transform	Transform.cpp	/^Transform::Transform() {$/;"	f	class:android::Transform
 Transform	Transform.cpp	/^Transform::Transform(const Transform&  other)$/;"	f	class:android::Transform
 Transform	Transform.cpp	/^Transform::Transform(uint32_t orientation) {$/;"	f	class:android::Transform
@@ -367,6 +391,10 @@ VDS_LOGE	DisplayHardware/VirtualDisplaySurface.cpp	28;"	d	file:
 VDS_LOGV	DisplayHardware/VirtualDisplaySurface.cpp	32;"	d	file:
 VDS_LOGW_IF	DisplayHardware/VirtualDisplaySurface.cpp	30;"	d	file:
 VIRTUAL_DISPLAY_ID_BASE	DisplayHardware/HWComposer.h	/^        VIRTUAL_DISPLAY_ID_BASE = HWC_DISPLAY_VIRTUAL,$/;"	e	enum:android::HWComposer::__anon4
+VRCommit	DisplayHardware/HWComposer.cpp	/^int HWComposer::VRCommit(int fd, int events, void* data) {$/;"	f	class:android::HWComposer
+VRCommitThread	DisplayHardware/HWComposer.cpp	/^HWComposer::VRCommitThread::VRCommitThread(HWComposer& hwc)$/;"	f	class:android::HWComposer::VRCommitThread
+VRCommitThread	DisplayHardware/HWComposer.h	/^    class VRCommitThread : public Thread {$/;"	c	class:android::HWComposer
+VRThread	DisplayHardware/VRThread.h	/^class VRThread : public Thread{$/;"	c	namespace:android
 VSyncSource	EventThread.h	/^class VSyncSource : public virtual RefBase {$/;"	c	namespace:android
 VSyncThread	DisplayHardware/HWComposer.cpp	/^HWComposer::VSyncThread::VSyncThread(HWComposer& hwc)$/;"	f	class:android::HWComposer::VSyncThread
 VSyncThread	DisplayHardware/HWComposer.h	/^    class VSyncThread : public Thread {$/;"	c	class:android::HWComposer
@@ -416,6 +444,8 @@ android	DisplayHardware/HWComposer.cpp	/^namespace android {$/;"	n	file:
 android	DisplayHardware/HWComposer.h	/^namespace android {$/;"	n
 android	DisplayHardware/PowerHAL.cpp	/^namespace android {$/;"	n	file:
 android	DisplayHardware/PowerHAL.h	/^namespace android {$/;"	n
+android	DisplayHardware/VRThread.cpp	/^namespace android {$/;"	n	file:
+android	DisplayHardware/VRThread.h	/^namespace android {$/;"	n
 android	DisplayHardware/VirtualDisplaySurface.cpp	/^namespace android {$/;"	n	file:
 android	DisplayHardware/VirtualDisplaySurface.h	/^namespace android {$/;"	n
 android	Effects/Daltonizer.cpp	/^namespace android {$/;"	n	file:
@@ -431,6 +461,8 @@ android	FrameTracker.cpp	/^namespace android {$/;"	n	file:
 android	FrameTracker.h	/^namespace android {$/;"	n
 android	Layer.cpp	/^namespace android {$/;"	n	file:
 android	Layer.h	/^namespace android {$/;"	n
+android	LayerBF.cpp	/^namespace android {$/;"	n	file:
+android	LayerBF.h	/^namespace android {$/;"	n
 android	LayerBlur.cpp	/^namespace android {$/;"	n	file:
 android	LayerBlur.h	/^namespace android {$/;"	n
 android	LayerDim.cpp	/^namespace android {$/;"	n	file:
@@ -467,7 +499,8 @@ android	Transform.cpp	/^namespace android {$/;"	n	file:
 android	Transform.h	/^namespace android {$/;"	n
 android	clz.h	/^namespace android {$/;"	n
 android	tests/Transaction_test.cpp	/^namespace android {$/;"	n	file:
-android	tests/resize/resize.cpp	/^namespace android {$/;"	n	file:
+android	tests/resize/fbFence.cpp	/^namespace android {$/;"	n	file:
+android	tests/resize/fbFence.h	/^namespace android {$/;"	n
 appendSfConfigString	SurfaceFlinger.cpp	/^\/*static*\/ void SurfaceFlinger::appendSfConfigString(String8& result)$/;"	f	class:android::SurfaceFlinger
 areVisibleRegionsOverlapping	DisplayHardware/HWComposer.cpp	/^bool HWComposer::areVisibleRegionsOverlapping(int32_t id ) {$/;"	f	class:android::HWComposer
 attachBuffer	DisplayHardware/VirtualDisplaySurface.cpp	/^status_t VirtualDisplaySurface::attachBuffer(int* \/* outSlot *\/,$/;"	f	class:android::VirtualDisplaySurface
@@ -492,6 +525,7 @@ bold	Colorizer.h	/^    void bold(String8& out) {$/;"	f	class:android::Colorizer
 bootFinished	SurfaceFlinger.cpp	/^void SurfaceFlinger::bootFinished()$/;"	f	class:android::SurfaceFlinger
 bottom	DisplayHardware/FloatRect.h	/^    float bottom;$/;"	m	class:android::FloatRect
 bounds	DisplayDevice.h	/^    inline Rect bounds() const { return getBounds(); }$/;"	f	class:android::DisplayDevice
+bpr	tests/resize/resize_signal.cpp	/^ssize_t bpr=0 ;$/;"	v
 buildShader	RenderEngine/Program.cpp	/^GLuint Program::buildShader(const char* source, GLenum type) {$/;"	f	class:android::Program
 callbacks	DisplayHardware/HWComposer.cpp	/^    struct callbacks : public hwc_procs_t {$/;"	s	struct:android::HWComposer::cb_context	file:
 canHandleOverlapArea	DisplayHardware/HWComposer.cpp	/^bool HWComposer::canHandleOverlapArea(int32_t id, Rect unionDr) {$/;"	f	class:android::HWComposer
@@ -525,6 +559,7 @@ color	Colorizer.h	/^    enum color {$/;"	g	class:android::Colorizer
 colorTransform	RenderEngine/GLES20RenderEngine.h	/^        mat4 colorTransform;$/;"	m	struct:android::GLES20RenderEngine::Group
 colorize	Colorizer.h	/^    void colorize(String8& out, color c) {$/;"	f	class:android::Colorizer
 commit	DisplayHardware/HWComposer.cpp	/^status_t HWComposer::commit() {$/;"	f	class:android::HWComposer
+commitBuffer	LayerBF.cpp	/^int  LayerBF::commitBuffer(int fd, int events, void* data) {$/;"	f	class:android::LayerBF
 commitTransaction	Layer.cpp	/^void Layer::commitTransaction() {$/;"	f	class:android::Layer
 commitTransaction	SurfaceFlinger.cpp	/^void SurfaceFlinger::commitTransaction()$/;"	f	class:android::SurfaceFlinger
 compType	DisplayHardware/HWComposer.h	/^        int32_t compType[MAX_LAYER_COUNT];$/;"	m	struct:android::HWComposer::CompMap
@@ -563,6 +598,7 @@ createDimLayer	SurfaceFlinger.cpp	/^status_t SurfaceFlinger::createDimLayer(cons
 createDisplay	SurfaceFlinger.cpp	/^sp<IBinder> SurfaceFlinger::createDisplay(const String8& displayName,$/;"	f	class:android::SurfaceFlinger
 createDisplayEventConnection	SurfaceFlinger.cpp	/^sp<IDisplayEventConnection> SurfaceFlinger::createDisplayEventConnection() {$/;"	f	class:android::SurfaceFlinger
 createEventConnection	EventThread.cpp	/^sp<EventThread::Connection> EventThread::createEventConnection() const {$/;"	f	class:android::EventThread
+createFrontLayer	SurfaceFlinger.cpp	/^status_t SurfaceFlinger::createFrontLayer(const sp<Client>& client,$/;"	f	class:android::SurfaceFlinger
 createGraphicBufferAlloc	SurfaceFlinger.cpp	/^sp<IGraphicBufferAlloc> SurfaceFlinger::createGraphicBufferAlloc()$/;"	f	class:android::SurfaceFlinger
 createLayer	SurfaceFlinger.cpp	/^status_t SurfaceFlinger::createLayer($/;"	f	class:android::SurfaceFlinger
 createNormalLayer	SurfaceFlinger.cpp	/^status_t SurfaceFlinger::createNormalLayer(const sp<Client>& client,$/;"	f	class:android::SurfaceFlinger
@@ -624,6 +660,7 @@ do_compare	SurfaceFlinger.cpp	/^int SurfaceFlinger::LayerVector::do_compare(cons
 draw	Layer.cpp	/^void Layer::draw(const sp<const DisplayDevice>& hw) {$/;"	f	class:android::Layer
 draw	Layer.cpp	/^void Layer::draw(const sp<const DisplayDevice>& hw, const Region& clip) {$/;"	f	class:android::Layer
 draw	Layer.cpp	/^void Layer::draw(const sp<const DisplayDevice>& hw,$/;"	f	class:android::Layer
+drawFrame	tests/resize/testEgl.cpp	/^status_t drawFrame(){$/;"	f
 drawMaskLayer	LayerBlur.cpp	/^bool LayerBlur::drawMaskLayer(sp<Layer>& maskLayer, const sp<const DisplayDevice>& hw,$/;"	f	class:android::LayerBlur
 drawMesh	RenderEngine/GLES11RenderEngine.cpp	/^void GLES11RenderEngine::drawMesh(const Mesh& mesh) {$/;"	f	class:android::GLES11RenderEngine
 drawMesh	RenderEngine/GLES20RenderEngine.cpp	/^void GLES20RenderEngine::drawMesh(const Mesh& mesh) {$/;"	f	class:android::GLES20RenderEngine
@@ -690,6 +727,7 @@ flip	DisplayDevice.cpp	/^void DisplayDevice::flip(const Region& dirty) const$/;"
 flush	RenderEngine/RenderEngine.cpp	/^void RenderEngine::flush() {$/;"	f	class:android::RenderEngine
 format	DisplayHardware/HWComposer.h	/^        uint32_t format;    \/\/ pixel format from FB hal, for pre-hwc-1.1$/;"	m	struct:android::HWComposer::DisplayData
 frame	SurfaceFlinger.h	/^        Rect frame;$/;"	m	struct:android::SurfaceFlinger::DisplayDeviceState
+frameIndex	DisplayHardware/HWComposer.cpp	/^static int frameIndex = 0;$/;"	m	namespace:android	file:
 frameReadyFence	FrameTracker.h	/^        sp<Fence> frameReadyFence;$/;"	m	struct:android::FrameTracker::FrameRecord
 frameReadyTime	FrameTracker.h	/^        nsecs_t frameReadyTime;$/;"	m	struct:android::FrameTracker::FrameRecord
 framebufferTarget	DisplayHardware/HWComposer.h	/^        hwc_layer_1* framebufferTarget;$/;"	m	struct:android::HWComposer::DisplayData
@@ -805,6 +843,10 @@ getStats	FrameTracker.cpp	/^void FrameTracker::getStats(FrameStats* outStats) co
 getStatus	RenderEngine/RenderEngine.cpp	/^status_t RenderEngine::BindImageAsFramebuffer::getStatus() const {$/;"	f	class:android::RenderEngine::BindImageAsFramebuffer
 getStride	RenderEngine/Mesh.cpp	/^size_t Mesh::getStride() const {$/;"	f	class:android::Mesh
 getString	RenderEngine/ProgramCache.cpp	/^    String8 getString() const {$/;"	f	class:android::Formatter
+getSystemTime	tests/resize/resize_double.cpp	/^int64_t getSystemTime()$/;"	f
+getSystemTime	tests/resize/resize_lr.cpp	/^int64_t getSystemTime()$/;"	f
+getSystemTime	tests/resize/resize_signal.cpp	/^int64_t getSystemTime()$/;"	f
+getSystemTime	tests/resize/resize_sync.cpp	/^int64_t getSystemTime()$/;"	f
 getTexCoordArray	RenderEngine/Mesh.h	/^    VertexArray<TYPE> getTexCoordArray() { return VertexArray<TYPE>(getTexCoords(), mStride); }$/;"	f	class:android::Mesh
 getTexCoords	RenderEngine/Mesh.cpp	/^float const* Mesh::getTexCoords() const {$/;"	f	class:android::Mesh
 getTexCoords	RenderEngine/Mesh.cpp	/^float* Mesh::getTexCoords() {$/;"	f	class:android::Mesh
@@ -819,6 +861,7 @@ getTransform	DisplayDevice.h	/^    const Transform&        getTransform() const 
 getTransformToDisplayInverse	SurfaceFlingerConsumer.cpp	/^bool SurfaceFlingerConsumer::getTransformToDisplayInverse() const {$/;"	f	class:android::SurfaceFlingerConsumer
 getType	Transform.cpp	/^uint32_t Transform::getType() const {$/;"	f	class:android::Transform
 getTypeId	Layer.h	/^    virtual const char* getTypeId() const { return "Layer"; }$/;"	f	class:android::Layer
+getTypeId	LayerBF.h	/^    virtual const char* getTypeId() const { return "LayerBF"; }$/;"	f	class:android::LayerBF
 getTypeId	LayerBlur.h	/^    virtual const char* getTypeId() const { return "LayerBlur"; }$/;"	f	class:android::LayerBlur
 getTypeId	LayerDim.h	/^    virtual const char* getTypeId() const { return "LayerDim"; }$/;"	f	class:android::LayerDim
 getUniform	RenderEngine/Program.cpp	/^GLint Program::getUniform(const char* name) const {$/;"	f	class:android::Program
@@ -838,6 +881,7 @@ getWidth	DisplayHardware/FloatRect.h	/^    inline float getWidth() const { retur
 getWidth	DisplayHardware/HWComposer.cpp	/^uint32_t HWComposer::getWidth(int disp) const {$/;"	f	class:android::HWComposer
 getWidth	RenderEngine/Texture.cpp	/^size_t Texture::getWidth() const {$/;"	f	class:android::Texture
 h	Layer.h	/^        uint32_t h;$/;"	m	struct:android::Layer::Geometry
+handleConnection	tests/resize/resize_signal.cpp	/^void handleConnection(int32_t fd,uint16_t *pt){$/;"	f
 handleMessage	MessageQueue.cpp	/^void MessageBase::handleMessage(const Message&) {$/;"	f	class:android::MessageBase
 handleMessage	MessageQueue.cpp	/^void MessageQueue::Handler::handleMessage(const Message& message) {$/;"	f	class:android::MessageQueue::Handler
 handleMessage	SurfaceFlinger.cpp	/^    virtual void handleMessage(const Message& message) {$/;"	f	class:android::GraphicProducerWrapper	file:
@@ -879,6 +923,7 @@ init	RenderEngine/Texture.cpp	/^void Texture::init(Target textureTarget, uint32_
 init	SurfaceFlinger.cpp	/^void SurfaceFlinger::init() {$/;"	f	class:android::SurfaceFlinger
 initCheck	Client.cpp	/^status_t Client::initCheck() const {$/;"	f	class:android::Client
 initCheck	DisplayHardware/HWComposer.cpp	/^status_t HWComposer::initCheck() const {$/;"	f	class:android::HWComposer
+initDisplay	tests/resize/testEgl.cpp	/^status_t initDisplay(){$/;"	f
 initFbo	LayerBlur.cpp	/^void LayerBlur::initFbo(FBO& fbobj, int width, int height, int textureName) {$/;"	f	class:android::LayerBlur
 initWithGLStrings	RenderEngine/GLExtensions.cpp	/^void GLExtensions::initWithGLStrings($/;"	f	class:android::GLExtensions
 initializeDisplays	SurfaceFlinger.cpp	/^void SurfaceFlinger::initializeDisplays() {$/;"	f	class:android::SurfaceFlinger
@@ -901,6 +946,8 @@ isFixedSize	LayerBlur.h	/^    virtual bool isFixedSize() const      { return tru
 isFixedSize	LayerDim.h	/^    virtual bool isFixedSize() const      { return true; }$/;"	f	class:android::LayerDim
 isFrameValidLocked	FrameTracker.cpp	/^bool FrameTracker::isFrameValidLocked(size_t idx) const {$/;"	f	class:android::FrameTracker
 isGeometryChanged	DisplayHardware/HWComposer.cpp	/^bool HWComposer::isGeometryChanged(int32_t id) {$/;"	f	class:android::HWComposer
+isInVRMode	DisplayHardware/HWComposer.cpp	/^static bool isInVRMode(){$/;"	f	namespace:android
+isInVRMode	EventThread.cpp	/^static bool isInVRMode(){$/;"	f	namespace:android
 isIntOnly	Layer.cpp	/^bool Layer::isIntOnly() const$/;"	f	class:android::Layer
 isMainDisplay	SurfaceFlinger.h	/^        bool isMainDisplay() const { return type == DisplayDevice::DISPLAY_PRIMARY; }$/;"	f	struct:android::SurfaceFlinger::DisplayDeviceState
 isOpaque	Layer.cpp	/^bool Layer::isOpaque(const Layer::State& s) const$/;"	f	class:android::Layer
@@ -941,6 +988,7 @@ lastDisplayFence	DisplayHardware/HWComposer.h	/^        sp<Fence> lastDisplayFen
 lastRetireFence	DisplayHardware/HWComposer.h	/^        sp<Fence> lastRetireFence;  \/\/ signals when the last set op retires$/;"	m	struct:android::HWComposer::DisplayData
 lastSurfaceViewLayer	SurfaceFlinger.cpp	/^static sp<Layer> lastSurfaceViewLayer;$/;"	m	namespace:android	file:
 latchBuffer	Layer.cpp	/^Region Layer::latchBuffer(bool& recomputeVisibleRegions)$/;"	f	class:android::Layer
+latchBuffer	LayerBF.cpp	/^Region LayerBF::latchBuffer(bool& recomputeVisibleRegions)$/;"	f	class:android::LayerBF
 layerStack	Layer.h	/^        uint32_t layerStack;$/;"	m	struct:android::Layer::State
 layerStack	SurfaceFlinger.h	/^        uint32_t layerStack;$/;"	m	struct:android::SurfaceFlinger::DisplayDeviceState
 layersSortedByZ	SurfaceFlinger.h	/^        LayerVector layersSortedByZ;$/;"	m	struct:android::SurfaceFlinger::State
@@ -965,6 +1013,7 @@ mAlphaPlaneLoc	RenderEngine/Program.h	/^    GLint mAlphaPlaneLoc;$/;"	m	class:an
 mAnimCompositionPending	SurfaceFlinger.h	/^    bool mAnimCompositionPending;$/;"	m	class:android::SurfaceFlinger
 mAnimFrameTracker	SurfaceFlinger.h	/^    FrameTracker mAnimFrameTracker;$/;"	m	class:android::SurfaceFlinger
 mAnimTransactionPending	SurfaceFlinger.h	/^    bool mAnimTransactionPending;$/;"	m	class:android::SurfaceFlinger
+mAutoCommit	DisplayHardware/VRThread.h	/^    bool mAutoCommit;$/;"	m	class:android::VRThread
 mBGSurfaceControl	tests/Transaction_test.cpp	/^    sp<SurfaceControl> mBGSurfaceControl;$/;"	m	class:android::LayerUpdateTest	file:
 mBlurMaskAlphaThreshold	LayerBlur.h	/^    float mBlurMaskAlphaThreshold;$/;"	m	class:android::LayerBlur
 mBlurMaskLayer	LayerBlur.h	/^    wp<Layer> mBlurMaskLayer;$/;"	m	class:android::LayerBlur
@@ -972,6 +1021,7 @@ mBlurMaskSampling	LayerBlur.h	/^    int32_t mBlurMaskSampling;$/;"	m	class:andro
 mBlurToken	LayerBlur.h	/^    qtiblur::BLUR_TOKEN mBlurToken;$/;"	m	class:android::LayerBlur
 mBootFinished	SurfaceFlinger.h	/^    bool mBootFinished;$/;"	m	class:android::SurfaceFlinger
 mBootTime	SurfaceFlinger.h	/^    nsecs_t mBootTime;$/;"	m	class:android::SurfaceFlinger
+mBufferItem	LayerBF.h	/^    BufferItem  mBufferItem;	$/;"	m	class:android::LayerBF
 mBuiltinDisplays	SurfaceFlinger.h	/^    sp<IBinder> mBuiltinDisplays[DisplayDevice::NUM_BUILTIN_DISPLAY_TYPES];$/;"	m	class:android::SurfaceFlinger
 mCBContext	DisplayHardware/HWComposer.h	/^    cb_context*                     mCBContext;$/;"	m	class:android::HWComposer
 mCache	RenderEngine/ProgramCache.h	/^    DefaultKeyedVector<Key, Program*> mCache;$/;"	m	class:android::ProgramCache
@@ -993,9 +1043,11 @@ mCompositionType	DisplayHardware/VirtualDisplaySurface.h	/^    CompositionType m
 mCond	DispSync.cpp	/^    Condition mCond;$/;"	m	class:android::DispSyncThread	file:
 mCond	EventControlThread.h	/^    Condition mCond;$/;"	m	class:android::EventControlThread
 mCondition	DisplayHardware/HWComposer.h	/^        Condition mCondition;$/;"	m	class:android::HWComposer::VSyncThread
+mCondition	DisplayHardware/VRThread.h	/^    Condition mCondition;$/;"	m	class:android::VRThread
 mCondition	EventThread.h	/^    mutable Condition mCondition;$/;"	m	class:android::EventThread
 mConfig	DisplayDevice.h	/^    EGLConfig       mConfig;$/;"	m	class:android::DisplayDevice
 mContentsChangedListener	SurfaceFlingerConsumer.h	/^    wp<ContentsChangedListener> mContentsChangedListener;$/;"	m	class:android::SurfaceFlingerConsumer
+mContext	tests/resize/testEgl.cpp	/^EGLDisplay  mContext;$/;"	v
 mCurrentBuffer	DisplayHardware/FramebufferSurface.h	/^    sp<GraphicBuffer> mCurrentBuffer;$/;"	m	class:android::FramebufferSurface
 mCurrentBufferSlot	DisplayHardware/FramebufferSurface.h	/^    int mCurrentBufferSlot;$/;"	m	class:android::FramebufferSurface
 mCurrentCrop	Layer.h	/^    Rect mCurrentCrop;$/;"	m	class:android::Layer
@@ -1024,9 +1076,11 @@ mDefaultOutputFormat	DisplayHardware/VirtualDisplaySurface.h	/^    uint32_t mDef
 mDestroyedLayerLock	SurfaceFlinger.h	/^    mutable Mutex mDestroyedLayerLock;$/;"	m	class:android::SurfaceFlinger
 mDestroyedLayers	SurfaceFlinger.h	/^    Vector<Layer const *> mDestroyedLayers;$/;"	m	class:android::SurfaceFlinger
 mDirty	Effects/Daltonizer.h	/^    bool mDirty;$/;"	m	class:android::Daltonizer
+mDirtyRegion	LayerBF.h	/^    Region mDirtyRegion;$/;"	m	class:android::LayerBF
 mDisableExtAnimation	SurfaceFlinger.h	/^    bool mDisableExtAnimation;$/;"	m	class:android::SurfaceFlinger
 mDispSync	SurfaceFlinger.cpp	/^    DispSync* mDispSync;$/;"	m	class:android::DispSyncSource	file:
 mDisplay	DisplayDevice.h	/^    EGLDisplay      mDisplay;$/;"	m	class:android::DisplayDevice
+mDisplay	tests/resize/testEgl.cpp	/^EGLDisplay  mDisplay;$/;"	v
 mDisplayData	DisplayHardware/HWComposer.h	/^    DisplayData                     mDisplayData[MAX_HWC_DISPLAYS];$/;"	m	class:android::HWComposer
 mDisplayEventConnections	EventThread.h	/^    SortedVector< wp<Connection> > mDisplayEventConnections;$/;"	m	class:android::EventThread
 mDisplayHeight	DisplayDevice.h	/^    int             mDisplayHeight;$/;"	m	class:android::DisplayDevice
@@ -1048,7 +1102,9 @@ mEGLContext	RenderEngine/RenderEngine.h	/^    EGLContext mEGLContext;$/;"	m	clas
 mEGLContext	SurfaceFlinger.h	/^    EGLContext mEGLContext;$/;"	m	class:android::SurfaceFlinger
 mEGLDisplay	SurfaceFlinger.h	/^    EGLDisplay mEGLDisplay;$/;"	m	class:android::SurfaceFlinger
 mEnabled	Colorizer.h	/^    bool mEnabled;$/;"	m	class:android::Colorizer
+mEnabled	DisplayHardware/HWComposer.h	/^	bool mEnabled;$/;"	m	class:android::HWComposer::VRCommitThread
 mEnabled	DisplayHardware/HWComposer.h	/^        bool mEnabled;$/;"	m	class:android::HWComposer::VSyncThread
+mEnabled	DisplayHardware/VRThread.h	/^    bool mEnabled;$/;"	m	class:android::VRThread
 mEngine	RenderEngine/RenderEngine.h	/^        RenderEngine& mEngine;$/;"	m	class:android::RenderEngine::BindImageAsFramebuffer
 mError	DispSync.h	/^    nsecs_t mError;$/;"	m	class:android::DispSync
 mEventControlLock	DisplayHardware/HWComposer.h	/^    mutable Mutex mEventControlLock;$/;"	m	class:android::HWComposer
@@ -1074,6 +1130,7 @@ mFboCapture	LayerBlur.h	/^    FBO mFboCapture;$/;"	m	class:android::LayerBlur
 mFboMasking	LayerBlur.h	/^    FBO mFboMasking;$/;"	m	class:android::LayerBlur
 mFiltering	Layer.h	/^    bool mFiltering;$/;"	m	class:android::Layer
 mFiltering	RenderEngine/Texture.h	/^    bool mFiltering;$/;"	m	class:android::Texture
+mFirstCall	LayerBF.h	/^    uint32_t mFirstCall;$/;"	m	class:android::LayerBF
 mFirstResyncSample	DispSync.h	/^    size_t mFirstResyncSample;$/;"	m	class:android::DispSync
 mFlags	DisplayDevice.h	/^    uint32_t        mFlags;$/;"	m	class:android::DisplayDevice
 mFlinger	Client.h	/^    sp<SurfaceFlinger> mFlinger;$/;"	m	class:android::Client
@@ -1084,6 +1141,8 @@ mFlinger	Layer.h	/^        sp<SurfaceFlinger> mFlinger;$/;"	m	class:android::Lay
 mFlinger	Layer.h	/^    sp<SurfaceFlinger> mFlinger;$/;"	m	class:android::Layer
 mFlinger	MessageQueue.h	/^    sp<SurfaceFlinger> mFlinger;$/;"	m	class:android::MessageQueue
 mFlinger	MonitoredProducer.h	/^    sp<SurfaceFlinger> mFlinger;$/;"	m	class:android::MonitoredProducer
+mFlingerSurface	tests/resize/testEgl.cpp	/^sp<Surface> mFlingerSurface;$/;"	v
+mFlingerSurfaceControl	tests/resize/testEgl.cpp	/^sp<SurfaceControl> mFlingerSurfaceControl;$/;"	v
 mForceHwcCopy	DisplayHardware/VirtualDisplaySurface.h	/^    bool mForceHwcCopy;$/;"	m	class:android::VirtualDisplaySurface
 mFormat	DisplayDevice.h	/^    PixelFormat     mFormat;$/;"	m	class:android::DisplayDevice
 mFormat	Layer.h	/^    PixelFormat mFormat;$/;"	m	class:android::Layer
@@ -1111,11 +1170,14 @@ mHeap	tests/Transaction_test.cpp	/^    sp<IMemoryHeap> mHeap;$/;"	m	class:androi
 mHeight	RenderEngine/GLES20RenderEngine.h	/^        int mHeight;$/;"	m	class:android::GLES20RenderEngine::Key
 mHeight	RenderEngine/Texture.h	/^    size_t mHeight;$/;"	m	class:android::Texture
 mHeight	tests/Transaction_test.cpp	/^    const uint32_t mHeight;$/;"	m	class:android::ScreenCapture	file:
+mHeight	tests/resize/testEgl.cpp	/^int         mHeight;$/;"	v
 mHwWorkListDirty	SurfaceFlinger.h	/^    bool mHwWorkListDirty;$/;"	m	class:android::SurfaceFlinger
 mHwc	DisplayHardware/FramebufferSurface.h	/^    HWComposer& mHwc;$/;"	m	class:android::FramebufferSurface
 mHwc	DisplayHardware/HWComposer.cpp	/^    struct hwc_composer_device_1* mHwc;$/;"	m	class:android::HWCLayerVersion1	typeref:struct:android::HWCLayerVersion1::hwc_composer_device_1	file:
+mHwc	DisplayHardware/HWComposer.h	/^        HWComposer& mHwc;$/;"	m	class:android::HWComposer::VRCommitThread
 mHwc	DisplayHardware/HWComposer.h	/^        HWComposer& mHwc;$/;"	m	class:android::HWComposer::VSyncThread
 mHwc	DisplayHardware/HWComposer.h	/^    struct hwc_composer_device_1*   mHwc;$/;"	m	class:android::HWComposer	typeref:struct:android::HWComposer::hwc_composer_device_1
+mHwc	DisplayHardware/VRThread.h	/^    HWComposer& mHwc; $/;"	m	class:android::VRThread
 mHwc	DisplayHardware/VirtualDisplaySurface.h	/^    HWComposer& mHwc;$/;"	m	class:android::VirtualDisplaySurface
 mHwc	SurfaceFlinger.h	/^    HWComposer* mHwc;$/;"	m	class:android::SurfaceFlinger
 mHwcDisplayId	DisplayDevice.h	/^    int32_t mHwcDisplayId;$/;"	m	class:android::DisplayDevice
@@ -1139,10 +1201,14 @@ mLayersRemoved	SurfaceFlinger.h	/^    bool mLayersRemoved;$/;"	m	class:android::
 mList	RenderEngine/RenderEngine.cpp	/^    KeyedVector<Attribute, EGLint> mList;$/;"	m	class:android::EGLAttributeVector	file:
 mLists	DisplayHardware/HWComposer.h	/^    struct hwc_display_contents_1*  mLists[MAX_HWC_DISPLAYS];$/;"	m	class:android::HWComposer	typeref:struct:android::HWComposer::hwc_display_contents_1
 mLock	Client.h	/^    mutable Mutex mLock;$/;"	m	class:android::Client
+mLock	DisplayHardware/HWComposer.h	/^        mutable Mutex mLock;$/;"	m	class:android::HWComposer::VRCommitThread
 mLock	DisplayHardware/HWComposer.h	/^        mutable Mutex mLock;$/;"	m	class:android::HWComposer::VSyncThread
 mLock	DisplayHardware/HWComposer.h	/^    mutable Mutex mLock;$/;"	m	class:android::HWComposer
+mLock	DisplayHardware/VRThread.h	/^    mutable Mutex mLock;$/;"	m	class:android::VRThread
 mLock	EventThread.h	/^    mutable Mutex mLock;$/;"	m	class:android::EventThread
 mLock	Layer.h	/^    mutable Mutex mLock;$/;"	m	class:android::Layer
+mLooper	DisplayHardware/HWComposer.h	/^	sp<Looper> mLooper; $/;"	m	class:android::HWComposer::VRCommitThread
+mLooper	LayerBF.h	/^    sp<Looper> mLooper;$/;"	m	class:android::LayerBF
 mLooper	MessageQueue.h	/^    sp<Looper> mLooper;$/;"	m	class:android::MessageQueue
 mMaskAlphaThreshold	RenderEngine/Description.h	/^    GLclampf mMaskAlphaThreshold;$/;"	m	class:android::Description
 mMaskAlphaThresholdLoc	RenderEngine/Program.h	/^    GLint mMaskAlphaThresholdLoc;$/;"	m	class:android::Program
@@ -1165,7 +1231,9 @@ mName	Layer.h	/^    String8 mName;$/;"	m	class:android::Layer
 mNativeWindow	DisplayDevice.h	/^    sp<ANativeWindow> mNativeWindow;$/;"	m	class:android::DisplayDevice
 mNeedsFiltering	DisplayDevice.h	/^    bool mNeedsFiltering;$/;"	m	class:android::DisplayDevice
 mNeedsFiltering	Layer.h	/^    bool mNeedsFiltering;$/;"	m	class:android::Layer
+mNextFakeVSync	DisplayHardware/HWComposer.h	/^        mutable nsecs_t mNextFakeVSync;$/;"	m	class:android::HWComposer::VRCommitThread
 mNextFakeVSync	DisplayHardware/HWComposer.h	/^        mutable nsecs_t mNextFakeVSync;$/;"	m	class:android::HWComposer::VSyncThread
+mNextFakeVSync	DisplayHardware/VRThread.h	/^    mutable nsecs_t mNextFakeVSync;$/;"	m	class:android::VRThread
 mNumDisplays	DisplayHardware/HWComposer.h	/^    size_t                          mNumDisplays;$/;"	m	class:android::HWComposer
 mNumFences	FrameTracker.h	/^    int mNumFences;$/;"	m	class:android::FrameTracker
 mNumFrames	FrameTracker.h	/^    int32_t mNumFrames[NUM_FRAME_BUCKETS];$/;"	m	class:android::FrameTracker
@@ -1221,8 +1289,11 @@ mQueueBufferOutput	DisplayHardware/VirtualDisplaySurface.h	/^    QueueBufferOutp
 mQueueItemLock	Layer.h	/^    mutable Mutex mQueueItemLock;$/;"	m	class:android::Layer
 mQueueItems	Layer.h	/^    Vector<BufferItem> mQueueItems;$/;"	m	class:android::Layer
 mQueuedFrames	Layer.h	/^    volatile int32_t mQueuedFrames;$/;"	m	class:android::Layer
+mRecordList	DisplayHardware/HWComposer.h	/^    struct hwc_display_contents_1*  mRecordList;\/\/used for record layer.$/;"	m	class:android::HWComposer	typeref:struct:android::HWComposer::hwc_display_contents_1
 mRefreshPending	Layer.h	/^    bool mRefreshPending;$/;"	m	class:android::Layer
+mRefreshPeriod	DisplayHardware/HWComposer.h	/^        nsecs_t mRefreshPeriod;$/;"	m	class:android::HWComposer::VRCommitThread
 mRefreshPeriod	DisplayHardware/HWComposer.h	/^        nsecs_t mRefreshPeriod;$/;"	m	class:android::HWComposer::VSyncThread
+mRefreshPeriod	DisplayHardware/VRThread.h	/^    nsecs_t mRefreshPeriod;$/;"	m	class:android::VRThread
 mRefreshSkipCount	DispSync.h	/^    int mRefreshSkipCount;$/;"	m	class:android::DispSync
 mRenderEngine	SurfaceFlinger.h	/^    RenderEngine* mRenderEngine;$/;"	m	class:android::SurfaceFlinger
 mRenderer	RenderEngine/GLExtensions.h	/^    String8 mRenderer;$/;"	m	class:android::GLExtensions
@@ -1237,8 +1308,12 @@ mSecure	Layer.h	/^    bool mSecure; \/\/ no screenshots$/;"	m	class:android::Lay
 mSecureLayerVisible	DisplayDevice.h	/^    bool mSecureLayerVisible;$/;"	m	class:android::DisplayDevice
 mSidebandStream	Layer.h	/^    sp<NativeHandle> mSidebandStream;$/;"	m	class:android::Layer
 mSidebandStreamChanged	Layer.h	/^    volatile int32_t mSidebandStreamChanged; \/\/ used like an atomic boolean$/;"	m	class:android::Layer
+mSignalCommit	DisplayHardware/VRThread.h	/^    bool mSignalCommit;$/;"	m	class:android::VRThread
 mSinkBufferHeight	DisplayHardware/VirtualDisplaySurface.h	/^    uint32_t mSinkBufferWidth, mSinkBufferHeight;$/;"	m	class:android::VirtualDisplaySurface
 mSinkBufferWidth	DisplayHardware/VirtualDisplaySurface.h	/^    uint32_t mSinkBufferWidth, mSinkBufferHeight;$/;"	m	class:android::VirtualDisplaySurface
+mSock	DisplayHardware/HWComposer.h	/^	int32_t mSock;	$/;"	m	class:android::HWComposer::VRCommitThread
+mSock	LayerBF.h	/^    int32_t mSock;	$/;"	m	class:android::LayerBF
+mSock	tests/resize/resize_signal.cpp	/^int32_t mSock ;$/;"	v
 mSource	DisplayHardware/VirtualDisplaySurface.h	/^    sp<IGraphicBufferProducer> mSource[2]; \/\/ indexed by SOURCE_*$/;"	m	class:android::VirtualDisplaySurface
 mState	RenderEngine/GLES20RenderEngine.h	/^    Description mState;$/;"	m	class:android::GLES20RenderEngine
 mStateLock	SurfaceFlinger.h	/^    mutable Mutex mStateLock;$/;"	m	class:android::SurfaceFlinger
@@ -1249,6 +1324,7 @@ mStride	RenderEngine/Mesh.h	/^        size_t mStride;$/;"	m	class:android::Mesh:
 mStride	RenderEngine/Mesh.h	/^    size_t mStride;$/;"	m	class:android::Mesh
 mString	RenderEngine/ProgramCache.cpp	/^    String8 mString;$/;"	m	class:android::Formatter	file:
 mSurface	DisplayDevice.h	/^    EGLSurface      mSurface;$/;"	m	class:android::DisplayDevice
+mSurface	tests/resize/testEgl.cpp	/^EGLDisplay  mSurface;$/;"	v
 mSurfaceFlingerConsumer	Layer.h	/^    sp<SurfaceFlingerConsumer> mSurfaceFlingerConsumer;$/;"	m	class:android::Layer
 mSyncSurfaceControl	tests/Transaction_test.cpp	/^    sp<SurfaceControl> mSyncSurfaceControl;$/;"	m	class:android::LayerUpdateTest	file:
 mTag	EventLog/EventLog.h	/^        int32_t mTag;$/;"	m	class:android::EventLog::TagBuffer
@@ -1266,7 +1342,9 @@ mTextureName	Layer.h	/^    uint32_t mTextureName;      \/\/ from GLES$/;"	m	clas
 mTextureName	RenderEngine/Texture.h	/^    uint32_t mTextureName;$/;"	m	class:android::Texture
 mTextureTarget	RenderEngine/Texture.h	/^    uint32_t mTextureTarget;$/;"	m	class:android::Texture
 mThread	DispSync.h	/^    sp<DispSyncThread> mThread;$/;"	m	class:android::DispSync
+mThreadInit	LayerBF.h	/^    bool  mThreadInit;$/;"	m	class:android::LayerBF
 mTime	FrameRateHelper.h	/^    nsecs_t mTime;$/;"	m	class:android::FrameRateHelper
+mTimeLineFd	tests/resize/fbFence.h	/^	int mTimeLineFd;$/;"	m	class:android::FBFence
 mTimerId	EventThread.h	/^    timer_t mTimerId;$/;"	m	class:android::EventThread
 mTraceVsync	SurfaceFlinger.cpp	/^    const bool mTraceVsync;$/;"	m	class:android::DispSyncSource	file:
 mTransactionCV	SurfaceFlinger.h	/^    Condition mTransactionCV;$/;"	m	class:android::SurfaceFlinger
@@ -1284,6 +1362,8 @@ mUnionDirtyRectPrev	SurfaceFlinger.h	/^    Rect mUnionDirtyRectPrev;$/;"	m	class
 mUseReadPixels	RenderEngine/RenderEngine.h	/^        bool mUseReadPixels;$/;"	m	class:android::RenderEngine::BindImageAsFramebuffer
 mUseSoftwareVSync	EventThread.h	/^    bool mUseSoftwareVSync;$/;"	m	class:android::EventThread
 mVDSEnabled	DisplayHardware/HWComposer.h	/^    bool                            mVDSEnabled;$/;"	m	class:android::HWComposer
+mVRCommitThread	DisplayHardware/HWComposer.h	/^    sp<VRCommitThread>              mVRCommitThread;$/;"	m	class:android::HWComposer
+mVRSignal	DisplayHardware/HWComposer.h	/^	Condition mVRSignal;$/;"	m	class:android::HWComposer::VRCommitThread
 mVSyncCounts	DisplayHardware/HWComposer.h	/^    size_t                          mVSyncCounts[HWC_NUM_PHYSICAL_DISPLAY_TYPES];$/;"	m	class:android::HWComposer
 mVSyncEvent	EventThread.h	/^    DisplayEventReceiver::Event mVSyncEvent[DisplayDevice::NUM_BUILTIN_DISPLAY_TYPES];$/;"	m	class:android::EventThread
 mVSyncSource	EventThread.h	/^    sp<VSyncSource> mVSyncSource;$/;"	m	class:android::EventThread
@@ -1309,8 +1389,17 @@ mWakeupLatency	DispSync.cpp	/^    nsecs_t mWakeupLatency;$/;"	m	class:android::D
 mWidth	RenderEngine/GLES20RenderEngine.h	/^        int mWidth;$/;"	m	class:android::GLES20RenderEngine::Key
 mWidth	RenderEngine/Texture.h	/^    size_t mWidth;$/;"	m	class:android::Texture
 mWidth	tests/Transaction_test.cpp	/^    const uint32_t mWidth;$/;"	m	class:android::ScreenCapture	file:
+mWidth	tests/resize/testEgl.cpp	/^int         mWidth;$/;"	v
 main	main_surfaceflinger.cpp	/^int main(int, char**) {$/;"	f
-main	tests/resize/resize.cpp	/^int main(int argc, char** argv)$/;"	f	namespace:android
+main	tests/resize/baofeng.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/eglTest.cpp	/^int  main(int argc ,char** argv){$/;"	f
+main	tests/resize/localsocket.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/resize.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/resize_double.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/resize_lr.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/resize_signal.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/resize_sync.cpp	/^int main(int argc, char** argv)$/;"	f
+main	tests/resize/testEgl.cpp	/^int main(int argc, char** argv)$/;"	f
 main	tests/screencap/screencap.cpp	/^int main(int argc, char** argv)$/;"	f
 main	tests/transform/TransformTest.cpp	/^int main(int argc, char **argv)$/;"	f
 main	tests/vsync/vsync.cpp	/^int main(int argc, char** argv)$/;"	f
@@ -1338,13 +1427,17 @@ onDisplayed	DisplayHardware/HWComposer.cpp	/^    virtual void onDisplayed() {$/;
 onDraw	Layer.cpp	/^void Layer::onDraw(const sp<const DisplayDevice>& hw, const Region& clip,$/;"	f	class:android::Layer
 onDraw	LayerBlur.cpp	/^void LayerBlur::onDraw(const sp<const DisplayDevice>& hw, const Region& \/*clip*\/,$/;"	f	class:android::LayerBlur
 onDraw	LayerDim.cpp	/^void LayerDim::onDraw(const sp<const DisplayDevice>& hw,$/;"	f	class:android::LayerDim
+onFirstRef	DisplayHardware/HWComposer.cpp	/^void HWComposer::VRCommitThread::onFirstRef() {$/;"	f	class:android::HWComposer::VRCommitThread
 onFirstRef	DisplayHardware/HWComposer.cpp	/^void HWComposer::VSyncThread::onFirstRef() {$/;"	f	class:android::HWComposer::VSyncThread
+onFirstRef	DisplayHardware/VRThread.cpp	/^void VRThread::onFirstRef() {$/;"	f	class:android::VRThread
 onFirstRef	EventThread.cpp	/^void EventThread::Connection::onFirstRef() {$/;"	f	class:android::EventThread::Connection
 onFirstRef	EventThread.cpp	/^void EventThread::onFirstRef() {$/;"	f	class:android::EventThread
 onFirstRef	Layer.cpp	/^void Layer::onFirstRef() {$/;"	f	class:android::Layer
+onFirstRef	LayerBF.cpp	/^void LayerBF::onFirstRef() {$/;"	f	class:android::LayerBF
 onFirstRef	SurfaceFlinger.cpp	/^void SurfaceFlinger::onFirstRef()$/;"	f	class:android::SurfaceFlinger
 onFrameAvailable	DisplayHardware/FramebufferSurface.cpp	/^void FramebufferSurface::onFrameAvailable(const BufferItem& \/* item *\/) {$/;"	f	class:android::FramebufferSurface
 onFrameAvailable	Layer.cpp	/^void Layer::onFrameAvailable(const BufferItem& item) {$/;"	f	class:android::Layer
+onFrameAvailable	LayerBF.cpp	/^void LayerBF::onFrameAvailable(const BufferItem& item) {$/;"	f	class:android::LayerBF
 onFrameCommitted	DisplayHardware/FramebufferSurface.cpp	/^void FramebufferSurface::onFrameCommitted() {$/;"	f	class:android::FramebufferSurface
 onFrameCommitted	DisplayHardware/VirtualDisplaySurface.cpp	/^void VirtualDisplaySurface::onFrameCommitted() {$/;"	f	class:android::VirtualDisplaySurface
 onFrameReplaced	Layer.cpp	/^void Layer::onFrameReplaced(const BufferItem& item) {$/;"	f	class:android::Layer
@@ -1353,6 +1446,7 @@ onHotplugReceived	SurfaceFlinger.cpp	/^void SurfaceFlinger::onHotplugReceived(in
 onInitializeDisplays	SurfaceFlinger.cpp	/^void SurfaceFlinger::onInitializeDisplays() {$/;"	f	class:android::SurfaceFlinger
 onLayerDestroyed	SurfaceFlinger.cpp	/^status_t SurfaceFlinger::onLayerDestroyed(const wp<Layer>& layer)$/;"	f	class:android::SurfaceFlinger
 onLayerDisplayed	Layer.cpp	/^void Layer::onLayerDisplayed(const sp<const DisplayDevice>& \/* hw *\/,$/;"	f	class:android::Layer
+onLayerDisplayed	LayerBF.cpp	/^void LayerBF::onLayerDisplayed(const sp<const DisplayDevice>& \/* hw *\/,$/;"	f	class:android::LayerBF
 onLayerRemoved	SurfaceFlinger.cpp	/^status_t SurfaceFlinger::onLayerRemoved(const sp<Client>& client, const sp<IBinder>& handle)$/;"	f	class:android::SurfaceFlinger
 onMessageReceived	SurfaceFlinger.cpp	/^void SurfaceFlinger::onMessageReceived(int32_t what) {$/;"	f	class:android::SurfaceFlinger
 onPostComposition	Layer.cpp	/^void Layer::onPostComposition() {$/;"	f	class:android::Layer
@@ -1396,6 +1490,7 @@ operator []	Transform.h	/^        inline vec3& operator [] (int i) { return v[i]
 orientation	SurfaceFlinger.h	/^        uint8_t orientation;$/;"	m	struct:android::SurfaceFlinger::DisplayDeviceState
 orientationToTransfrom	DisplayDevice.cpp	/^status_t DisplayDevice::orientationToTransfrom($/;"	f	class:DisplayDevice
 orientation_flags	Transform.h	/^            enum orientation_flags {$/;"	g	class:android::Transform
+outBuffer	tests/resize/resize_signal.cpp	/^ANativeWindow_Buffer outBuffer;$/;"	v
 outbufAcquireFence	DisplayHardware/HWComposer.h	/^        sp<Fence> outbufAcquireFence;$/;"	m	struct:android::HWComposer::DisplayData
 outbufHandle	DisplayHardware/HWComposer.h	/^        buffer_handle_t outbufHandle;$/;"	m	struct:android::HWComposer::DisplayData
 parseGlesVersion	RenderEngine/RenderEngine.cpp	/^RenderEngine::GlesVersion RenderEngine::parseGlesVersion(const char* str) {$/;"	f	class:android::RenderEngine
@@ -1427,6 +1522,10 @@ queueBuffer	DisplayHardware/VirtualDisplaySurface.cpp	/^status_t VirtualDisplayS
 queueBuffer	MonitoredProducer.cpp	/^status_t MonitoredProducer::queueBuffer(int slot, const QueueBufferInput& input,$/;"	f	class:android::MonitoredProducer
 readPixels	RenderEngine/RenderEngine.cpp	/^void RenderEngine::readPixels(size_t l, size_t b, size_t w, size_t h, uint32_t* pixels) {$/;"	f	class:android::RenderEngine
 rebuildLayerStacks	SurfaceFlinger.cpp	/^void SurfaceFlinger::rebuildLayerStacks() {$/;"	f	class:android::SurfaceFlinger
+receiver	tests/resize/resize_double.cpp	/^int receiver(int fd, int events, void* data)$/;"	f
+receiver	tests/resize/resize_lr.cpp	/^int receiver(int fd, int events, void* data)$/;"	f
+receiver	tests/resize/resize_sync.cpp	/^int receiver(int fd, int events, void* data)$/;"	f
+receiver	tests/resize/testEgl.cpp	/^int receiver(int fd, int events, void* data)$/;"	f
 receiver	tests/vsync/vsync.cpp	/^int receiver(int fd, int events, void* data)$/;"	f
 reduce	Layer.cpp	/^static Rect reduce(const Rect& win, const Region& exclude) {$/;"	f	namespace:android
 refresh	DisplayHardware/HWComposer.h	/^        nsecs_t refresh;$/;"	m	struct:android::HWComposer::DisplayConfig
@@ -1521,6 +1620,7 @@ setDisplaySize	DisplayDevice.cpp	/^void DisplayDevice::setDisplaySize(const int 
 setDisplayStateLocked	SurfaceFlinger.cpp	/^uint32_t SurfaceFlinger::setDisplayStateLocked(const DisplayState& s)$/;"	f	class:android::SurfaceFlinger
 setEGLHandles	RenderEngine/RenderEngine.cpp	/^void RenderEngine::setEGLHandles(EGLConfig config, EGLContext ctxt) {$/;"	f	class:android::RenderEngine
 setEnabled	DisplayHardware/HWComposer.cpp	/^void HWComposer::VSyncThread::setEnabled(bool enabled) {$/;"	f	class:android::HWComposer::VSyncThread
+setEnabled	DisplayHardware/VRThread.cpp	/^void VRThread::setEnabled(bool enabled) {$/;"	f	class:android::VRThread
 setEventThread	MessageQueue.cpp	/^void MessageQueue::setEventThread(const sp<EventThread>& eventThread)$/;"	f	class:android::MessageQueue
 setFiltering	Layer.cpp	/^void Layer::setFiltering(bool filtering) {$/;"	f	class:android::Layer
 setFiltering	RenderEngine/Texture.cpp	/^void Texture::setFiltering(bool enabled) {$/;"	f	class:android::Texture
@@ -1555,6 +1655,7 @@ setPowerModeInternal	SurfaceFlinger.cpp	/^void SurfaceFlinger::setPowerModeInter
 setPremultipliedAlpha	RenderEngine/Description.cpp	/^void Description::setPremultipliedAlpha(bool premultipliedAlpha) {$/;"	f	class:android::Description
 setProjection	DisplayDevice.cpp	/^void DisplayDevice::setProjection(int orientation,$/;"	f	class:DisplayDevice
 setProjectionMatrix	RenderEngine/Description.cpp	/^void Description::setProjectionMatrix(const mat4& mtx) {$/;"	f	class:android::Description
+setRecord	DisplayHardware/HWComposer.cpp	/^    virtual void setRecord(bool record) {$/;"	f	class:android::HWCLayerVersion1
 setRefreshSkipCount	DispSync.cpp	/^void DispSync::setRefreshSkipCount(int count) {$/;"	f	class:android::DispSync
 setScissor	RenderEngine/RenderEngine.cpp	/^void RenderEngine::setScissor($/;"	f	class:android::RenderEngine
 setSidebandStream	DisplayHardware/HWComposer.cpp	/^    virtual void setSidebandStream(const sp<NativeHandle>& stream) {$/;"	f	class:android::HWCLayerVersion1
@@ -1604,6 +1705,7 @@ setupMesh	LayerBlur.cpp	/^static void setupMesh(Mesh& mesh, int width, int heigh
 setupMeshPartial	LayerBlur.cpp	/^static void setupMeshPartial(Mesh& mesh, Rect rcDraw, Rect rcTexture, int texWidth, int texHeight, int viewportHeight) {$/;"	f	namespace:android
 sfVsyncPhaseOffsetNs	SurfaceFlinger.cpp	/^static const int64_t sfVsyncPhaseOffsetNs = SF_VSYNC_EVENT_PHASE_OFFSET_NS;$/;"	m	namespace:android	file:
 shouldPresentNow	Layer.cpp	/^bool Layer::shouldPresentNow(const DispSync& dispSync) const {$/;"	f	class:android::Layer
+signal	tests/resize/fbFence.cpp	/^status_t FBFence::signal(){$/;"	f	class:android::FBFence
 signalLayerUpdate	SurfaceFlinger.cpp	/^void SurfaceFlinger::signalLayerUpdate() {$/;"	f	class:android::SurfaceFlinger
 signalRefresh	SurfaceFlinger.cpp	/^void SurfaceFlinger::signalRefresh() {$/;"	f	class:android::SurfaceFlinger
 signalTransaction	SurfaceFlinger.cpp	/^void SurfaceFlinger::signalTransaction() {$/;"	f	class:android::SurfaceFlinger
@@ -1623,12 +1725,19 @@ surface	SurfaceFlinger.h	/^        sp<IGraphicBufferProducer> surface;$/;"	m	str
 swap	clz.h	/^void swap(T& a, T& b) {$/;"	f	namespace:android
 swapBuffers	DisplayDevice.cpp	/^void DisplayDevice::swapBuffers(HWComposer& hwc) const {$/;"	f	class:DisplayDevice
 swapRegion	DisplayDevice.h	/^    mutable Region swapRegion;$/;"	m	class:android::DisplayDevice
+syncFrame	tests/resize/testEgl.cpp	/^status_t syncFrame(){$/;"	f
+testCall	tests/resize/resize_double.cpp	/^int testCall(){$/;"	f
 texCoords	RenderEngine/Program.h	/^    enum { position=0, texCoords=1 };$/;"	e	enum:android::Program::__anon19
 texture	RenderEngine/GLES20RenderEngine.h	/^        GLuint texture;$/;"	m	struct:android::GLES20RenderEngine::Group
+threadEnv	tests/resize/resize_signal.cpp	/^void *threadEnv(void*){$/;"	f
 threadLoop	DispSync.cpp	/^    virtual bool threadLoop() {$/;"	f	class:android::DispSyncThread
+threadLoop	DisplayHardware/HWComposer.cpp	/^bool HWComposer::VRCommitThread::threadLoop() {$/;"	f	class:android::HWComposer::VRCommitThread
 threadLoop	DisplayHardware/HWComposer.cpp	/^bool HWComposer::VSyncThread::threadLoop() {$/;"	f	class:android::HWComposer::VSyncThread
+threadLoop	DisplayHardware/VRThread.cpp	/^bool VRThread::threadLoop() {$/;"	f	class:android::VRThread
 threadLoop	EventControlThread.cpp	/^bool EventControlThread::threadLoop() {$/;"	f	class:android::EventControlThread
 threadLoop	EventThread.cpp	/^bool EventThread::threadLoop() {$/;"	f	class:android::EventThread
+threadLoop	LayerBF.cpp	/^bool LayerBF::threadLoop() {$/;"	f	class:android::LayerBF
+threadSignal	tests/resize/resize_signal.cpp	/^void* threadSignal(uint16_t* pt){$/;"	f
 top	DisplayHardware/FloatRect.h	/^    float top;$/;"	m	class:android::FloatRect
 transact	SurfaceFlinger.cpp	/^    virtual status_t transact(uint32_t code,$/;"	f	class:android::GraphicProducerWrapper	file:
 transform	Layer.h	/^        Transform transform;$/;"	m	struct:android::Layer::State
@@ -1671,6 +1780,8 @@ vsyncHint	DisplayHardware/PowerHAL.cpp	/^status_t PowerHAL::vsyncHint(bool enabl
 vsyncHintOffDelay	EventThread.cpp	/^const long vsyncHintOffDelay = 40000000;$/;"	m	namespace:android	file:
 vsyncOffCallback	EventThread.cpp	/^static void vsyncOffCallback(union sigval val) {$/;"	f	namespace:android
 vsyncPhaseOffsetNs	SurfaceFlinger.cpp	/^static const int64_t vsyncPhaseOffsetNs = VSYNC_EVENT_PHASE_OFFSET_NS;$/;"	m	namespace:android	file:
+vsync_delay	tests/resize/testEgl.cpp	/^static   struct timespec vsync_delay;$/;"	v	typeref:struct:timespec	file:
+vsync_delay_enable	tests/resize/testEgl.cpp	/^bool vsync_delay_enable;$/;"	v
 w	Layer.h	/^        uint32_t w;$/;"	m	struct:android::Layer::Geometry
 wait	Barrier.h	/^    void wait() const {$/;"	f	class:android::Barrier
 wait	MessageQueue.h	/^    void wait() const { barrier.wait(); }$/;"	f	class:android::MessageBase
@@ -1707,6 +1818,7 @@ zero	DisplayHardware/HWComposer.cpp	/^        void (*zero[4])(void);$/;"	m	struc
 ~DisplaySurface	DisplayHardware/DisplaySurface.h	/^    virtual ~DisplaySurface() {}$/;"	f	class:android::DisplaySurface
 ~EventControlThread	EventControlThread.h	/^    virtual ~EventControlThread() {}$/;"	f	class:android::EventControlThread
 ~EventHandler	DisplayHardware/HWComposer.h	/^        virtual ~EventHandler() {}$/;"	f	class:android::HWComposer::EventHandler
+~FBFence	tests/resize/fbFence.cpp	/^FBFence::~FBFence() {$/;"	f	class:android::FBFence
 ~FrameRateHelper	FrameRateHelper.h	/^        ~FrameRateHelper() {}$/;"	f	class:android::FrameRateHelper
 ~FramebufferSurface	DisplayHardware/FramebufferSurface.h	/^    virtual ~FramebufferSurface() { }; \/\/ this class cannot be overloaded$/;"	f	class:android::FramebufferSurface
 ~GLES10RenderEngine	RenderEngine/GLES10RenderEngine.cpp	/^GLES10RenderEngine::~GLES10RenderEngine() {$/;"	f	class:android::GLES10RenderEngine
@@ -1717,6 +1829,7 @@ zero	DisplayHardware/HWComposer.cpp	/^        void (*zero[4])(void);$/;"	m	struc
 ~HWComposer	DisplayHardware/HWComposer.cpp	/^HWComposer::~HWComposer() {$/;"	f	class:android::HWComposer
 ~Iterable	DisplayHardware/HWComposer.cpp	/^    virtual ~Iterable() { }$/;"	f	class:android::Iterable
 ~Layer	Layer.cpp	/^Layer::~Layer() {$/;"	f	class:android::Layer
+~LayerBF	LayerBF.cpp	/^LayerBF::~LayerBF() {$/;"	f	class:android::LayerBF
 ~LayerBlur	LayerBlur.cpp	/^LayerBlur::~LayerBlur() {$/;"	f	class:android::LayerBlur
 ~LayerCleaner	Layer.cpp	/^Layer::LayerCleaner::~LayerCleaner() {$/;"	f	class:android::Layer::LayerCleaner
 ~LayerDim	LayerDim.cpp	/^LayerDim::~LayerDim() {$/;"	f	class:android::LayerDim

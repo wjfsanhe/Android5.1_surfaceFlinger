@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#define ATRACE_TAG ATRACE_TAG_GRAPHICS
+//#define ATRACE_TAG ATRACE_TAG_GRAPHICS
+#define ATRACE_TAG ATRACE_TAG_APP
 
 #include <cutils/memory.h>
 
 #include <utils/Log.h>
-
+#include <utils/Trace.h>
 #include <binder/IPCThreadState.h>
 #include <binder/ProcessState.h>
 #include <binder/IServiceManager.h>
@@ -82,7 +83,11 @@ int receiver(int fd, int events, void* data)
     return 1;
 }
 
-
+int testCall(){
+ATRACE_CALL();
+printf("testfunc");
+return 0;
+}
 int main(int argc, char** argv)
 {
 	
@@ -104,7 +109,7 @@ int main(int argc, char** argv)
     sp<SurfaceComposerClient> client = new SurfaceComposerClient();
     printf(" Begin resize work\n"); 
     sp<SurfaceControl> surfaceControl = client->createSurface(String8("resize"),
-            1440, 2560, PIXEL_FORMAT_RGB_565, 0x40000);
+            1440, 2560, PIXEL_FORMAT_RGB_565, 0x0000);
     surface = surfaceControl->getSurface();
 
     SurfaceComposerClient::openGlobalTransaction();
@@ -112,7 +117,6 @@ int main(int argc, char** argv)
     SurfaceComposerClient::closeGlobalTransaction();
     ANativeWindow_Buffer outBuffer;
     surface->lock(&outBuffer, NULL);
-    surface->Post(); //post first frame.
    
     //create looper relative component
     sp<Looper> loop = new Looper(false);
@@ -127,7 +131,7 @@ int main(int argc, char** argv)
     bool oddEven=true;
     int64_t  start,end,end2;
     uint16_t *region1Start=(uint16_t*)(outBuffer.bits) ;
-    uint16_t *region2Start=(uint16_t*)((outBuffer.bits) + bpr*outBuffer.height/2);
+    uint16_t *region2Start=(uint16_t*)((outBuffer.bits) + bpr*outBuffer.height/3);
     uint16_t *region3Start=(uint16_t*)((outBuffer.bits) + bpr*outBuffer.height*2/3);
 #if  1
    do {
@@ -139,6 +143,11 @@ int main(int argc, char** argv)
                 break;
             case ALOOPER_POLL_CALLBACK:
 		{
+			ATRACE_CALL();
+
+			testCall();
+			//Trace.traceBegin(Trace.TRACE_TAG_GRAPHICS, "resize");
+
 			
                 	float t = float(systemTime() - start) / s2ns(1);
 			start=systemTime();
@@ -156,7 +165,7 @@ int main(int argc, char** argv)
 				android_memset16(region2Start, 0x0000, bpr*outBuffer.height/3);
 				android_memset16(region3Start, 0xF800, bpr*outBuffer.height/3);*/
 				end2=systemTime();
-				surface->Post();
+				surface->unlockAndPost();
 			} else {
 				android_memset16((uint16_t*)outBuffer.bits, 0x07E0, bpr*outBuffer.height);
 				
@@ -171,7 +180,7 @@ int main(int argc, char** argv)
 				android_memset16(region3Start, 0x07E0, bpr*outBuffer.height/3);*/
 				
 				end2=systemTime();
-				surface->Post();
+				surface->unlockAndPost();
 			}
 			end=systemTime();
 			float cost=float(end-start)/ s2ns(1);
@@ -181,6 +190,8 @@ int main(int argc, char** argv)
                 	//printf("%f ms (%f Hz), draw cost %f ms,simple cost %f ms\n", t*1000, 1.0/t,cost*1000
 			//					,cost2*1000);
 			oddEven=!oddEven;
+			//Trace.traceEnd(Trace.TRACE_TAG_GRAPHICS, "resize");
+
                 };
                 break;
             case ALOOPER_POLL_TIMEOUT:

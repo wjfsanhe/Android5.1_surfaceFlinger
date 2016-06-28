@@ -46,10 +46,13 @@
 
 #include "../Layer.h"           // needed only for debugging
 #include "../SurfaceFlinger.h"
-
+#include <gralloc_priv.h>
 #define GPUTILERECT_DEBUG 0
 
 namespace android {
+
+
+const String8 SOCKET_NAME("signalBF");
 
 #define MIN_HWC_HEADER_VERSION HWC_HEADER_VERSION
 
@@ -82,6 +85,19 @@ struct HWComposer::cb_context {
 };
 
 // ---------------------------------------------------------------------------
+
+static bool isInVRMode(){
+	char value[PROPERTY_VALUE_MAX];
+	property_get("sf.vrmode", value, "0");	
+	ALOGD("sf.vrmode: %s",value);
+	return (atoi(value) > 0)?true:false;
+}
+
+static inline uint32_t curScreenIdx() {
+	char value[PROPERTY_VALUE_MAX];
+	property_get("vr.updown", value, "0");
+        return (atoi(value)) ;
+}
 
 HWComposer::HWComposer(
         const sp<SurfaceFlinger>& flinger,
@@ -232,6 +248,18 @@ HWComposer::~HWComposer() {
     delete mCBContext;
 }
 
+
+status_t HWComposer::setVsyncSource(sp<VSyncSource> syncSource)
+{
+	if(syncSource != NULL) {
+		ALOGD("HWC sync source received");
+		mVSyncSource=syncSource;
+		mVSyncSource->setCallback(static_cast<VSyncSource::Callback*>(this));
+	}
+	return NO_ERROR;	
+}
+
+
 // Load and prepare the hardware composer module.  Sets mHwc.
 void HWComposer::loadHwcModule()
 {
@@ -323,8 +351,10 @@ void HWComposer::vsync(int disp, int64_t timestamp) {
         char tag[16];
         snprintf(tag, sizeof(tag), "HW_VSYNC_%1u", disp);
         ATRACE_INT(tag, ++mVSyncCounts[disp] & 1);
-
-        mEventHandler.onVSyncReceived(disp, timestamp);
+	ALOGE("ztw mVRCommitThread %s %d",__func__,__LINE__);
+	//if(mVRCommitThread!= NULL)
+	//	mVRCommitThread->mVRSignal.signal();
+	mEventHandler.onVSyncReceived(disp, timestamp);
     }
 }
 
@@ -722,29 +752,58 @@ status_t HWComposer::prepare() {
                 mLists[i]->sur = EGL_NO_SURFACE;
             }
         }
+/*
+	for (size_t j=0 ; j<mLists[i]->numHwLayers ; j++) {
+		const hwc_layer_1_t* l = &mLists[i]->hwLayers[j];
+		if (l->flags & HWC_RECORD_LAYER ){
+			((private_handle_t *)(l->handle))->height =2560;
+		}
+	}*/
     }
 
-    int err = mHwc->prepare(mHwc, mNumDisplays, mLists);
     //we record layer here, only process Primary Display.
     DisplayData &recordDisp(mDisplayData[0]);//primary display.
+    for (size_t i=0 ; i<recordDisp.list->numHwLayers ; i++) {
+	    const hwc_layer_1_t* l = &recordDisp.list->hwLayers[i];
+	    ALOGD("ztw001 flags:0x%x",l->flags);
+	    if ( l->flags & HWC_RECORD_LAYER ){
+		    ((private_handle_t *)(l->handle))->height =2560;
+	    }
+    }
+
+
+    ALOGD("ztw prepare!");
+    int err = mHwc->prepare(mHwc, mNumDisplays, mLists);
     
     if (NULL == mRecordList) {
 	//only record one layer.
-	ALOGD("Create record list");
+	ALOGD("ztw Create record list");
 	mRecordList =  (hwc_display_contents_1_t*)malloc( sizeof(hwc_display_contents_1_t)
 									+ sizeof(hwc_layer_1_t));
 	mRecordList->numHwLayers = 1;
     }
+    if(!isInVRMode()) {
+	if(mVSyncSource != NULL)
+	mVSyncSource->setVSyncEnabled(false);
+    }
     for (size_t i=0 ; i<recordDisp.list->numHwLayers ; i++) {
 	    const hwc_layer_1_t* l = &recordDisp.list->hwLayers[i];
-	    ALOGD("flags:0x%x",l->flags);
+	    ALOGD("ztw flags:0x%x",l->flags);
 	    if ( l->flags & HWC_RECORD_LAYER ){
 		//record this layer.
 		ALOGD("find one record layer [%d-%d]",recordDisp.list->numHwLayers,i);
 		memset(&mRecordList->hwLayers[0],0,sizeof(hwc_layer_1_t));	
 		memcpy(&mRecordList->hwLayers[0],l,sizeof(hwc_layer_1_t));
-		ALOGD("record layer:[%p]-0x%X",mRecordList->hwLayers[0].handle,mRecordList->hwLayers[0].flags);
-	    }
+		ALOGD("ztwheight[%d] record layer:[%p]-0x%X",((private_handle_t *)(mRecordList->hwLayers[0].handle))->height ,mRecordList->hwLayers[0].handle,mRecordList->hwLayers[0].flags);
+		if(mVSyncSource != NULL)
+			mVSyncSource->setVSyncEnabled(true);
+		/*if( mVRCommitThread==NULL ){
+			ALOGD("-------Create VRCommit Thread!!");
+			mVRCommitThread=new VRCommitThread(*this);
+		}else{
+        		mVRCommitThread->mVRSignal.signal();
+		}*/	    
+	}
     }		
 
 
@@ -854,16 +913,29 @@ sp<Fence> HWComposer::getAndResetReleaseFence(int32_t id) {
     return fd >= 0 ? new Fence(fd) : Fence::NO_FENCE;
 }
 
-status_t HWComposer::VRCommit() {
+
+
+int HWComposer::VRCommit(int fd, int events, void* data) {
+    HWComposer* hwc=reinterpret_cast<HWComposer*>(data);
     int err = NO_ERROR;
-    if (NULL == mRecordList) return err;
-    if (mHwc) {
-        if (!hwcHasApiVersion(mHwc, HWC_DEVICE_API_VERSION_1_1)) {
+    //ALOGD("------- VR thread Receive one commit request");
+    if (NULL == hwc->mRecordList) return err;
+    //ALOGD("------- VR thread commit one request");
+    //return 1 ;
+    /*char cmd[25];
+    read(fd,cmd,25);
+    ALOGD("VRThread: gotMessage:%s",cmd);
+    if(strncmp(cmd,"SignalR",7)){
+	ALOGD("receive exception message");
+	return 0;
+    }*/
+    if (hwc) {
+        if (!hwcHasApiVersion(hwc->mHwc, HWC_DEVICE_API_VERSION_1_1)) {
             // On version 1.0, the OpenGL ES target surface is communicated
             // by the (dpy, sur) fields and we are guaranteed to have only
             // a single display.
-            mLists[0]->dpy = eglGetCurrentDisplay();
-            mLists[0]->sur = eglGetCurrentSurface(EGL_DRAW);
+            hwc->mLists[0]->dpy = eglGetCurrentDisplay();
+            hwc->mLists[0]->sur = eglGetCurrentSurface(EGL_DRAW);
         }
 
         /*for (size_t i=VIRTUAL_DISPLAY_ID_BASE; i<mNumDisplays; i++) {
@@ -875,7 +947,24 @@ status_t HWComposer::VRCommit() {
             }
         }*/
 	//only commit record list .
-        err = mHwc->set(mHwc, 1, &mRecordList);
+	hwc_layer_1_t* recordLayer = &mRecordList->hwLayers[0];
+		
+	if( curScreenIdx() == 0 ) {
+		//recordLayer->sourceCropf.top = 2560;
+		//recordLayer->sourceCropf.bottom = 5120;
+		((private_handle_t *)(recordLayer->handle))->offset =0;
+		((private_handle_t *)(recordLayer->handle))->height =2560;
+		ALOGD("----- HWC up screen");
+	} else {
+		((private_handle_t *)(recordLayer->handle))->offset = 1536*2560*3;
+		((private_handle_t *)(recordLayer->handle))->height =2560;
+		ALOGD("----- HWC down screen");
+		//recordLayer->sourceCropf.top = 0;
+		//recordLayer->sourceCropf.bottom = 2560;
+	}
+ 	//err =hwc->mHwc->prepare(hwc->mHwc, mNumDisplays, &hwc->mRecordList);
+	//(l.sourceCropf.left, l.sourceCropf.top, l.sourceCropf.right, l.sourceCropf.bottom)
+        err = hwc->mHwc->set(hwc->mHwc, 1, &hwc->mRecordList);
 
         /*for (size_t i=0 ; i<mNumDisplays ; i++) {
             DisplayData& disp(mDisplayData[i]);
@@ -890,8 +979,9 @@ status_t HWComposer::VRCommit() {
             }
         }*/
     }
-    return (status_t)err;
+    return 1;
 }
+
 status_t HWComposer::commit() {
     int err = NO_ERROR;
     if (mHwc) {
@@ -1435,6 +1525,86 @@ void HWComposer::dump(String8& result) const {
     }
 }
 
+void HWComposer::onVSyncEvent(nsecs_t timestamp) {
+    Mutex::Autolock _l(mLock);
+    ALOGD("HWC  got one vsync:%lld, %lld",timestamp,systemTime()-timestamp);
+    VRCommit(-1,0,this);
+}
+
+// ---------------------------------------------------------------------------
+HWComposer::VRCommitThread::VRCommitThread(HWComposer& hwc)
+    : mHwc(hwc), mEnabled(false),
+ 	mNextFakeVSync(0),
+      	mRefreshPeriod(hwc.getRefreshPeriod(HWC_DISPLAY_PRIMARY))
+{
+	ALOGD("VRCommitThread construct");
+}
+
+bool HWComposer::VRCommitThread::threadLoop() {
+    /*{ // scope for lock
+        Mutex::Autolock _l(mLock);
+        while (!mEnabled) {
+            mCondition.wait(mLock);
+        }
+    }*/
+	{
+		Mutex::Autolock _l(mLock);
+		//if (!isInVRMode()){
+			mVRSignal.wait(mLock);
+		//return true;
+		//	}
+	} 
+
+    ALOGD("VRCommitThread threadloop");
+#if 0
+    //we commit one request every vsync
+   const nsecs_t period = mRefreshPeriod;
+   // const nsecs_t period = 10000000;
+    const nsecs_t now = systemTime(CLOCK_MONOTONIC);
+    nsecs_t next_vsync = mNextFakeVSync;
+    nsecs_t sleep = next_vsync - now;
+    if (sleep < 0) {
+        // we missed, find where the next vsync should be
+        sleep = (period - ((now - next_vsync) % period));
+        next_vsync = now + sleep;
+    }
+    mNextFakeVSync = next_vsync + period;
+
+    struct timespec spec;
+    spec.tv_sec  = next_vsync / 1000000000;
+    spec.tv_nsec = next_vsync % 1000000000;
+
+    int err;
+    do {
+        err = clock_nanosleep(CLOCK_MONOTONIC, TIMER_ABSTIME, &spec, NULL);
+    } while (err<0 && errno == EINTR); 
+#endif
+    mHwc.VRCommit(-1,0,&mHwc);
+    //mLooper->pollOnce(-1);
+    return true;
+}
+
+void HWComposer::VRCommitThread::onFirstRef() {
+    //cretae local socket here.
+    if((mSock = socket_local_client(SOCKET_NAME.string(),
+                                 ANDROID_SOCKET_NAMESPACE_ABSTRACT,
+                                 //ANDROID_SOCKET_NAMESPACE_FILESYSTEM,
+                                 SOCK_STREAM)) < 0) {    
+    	ALOGE("HWC: create local socket fail,%s",strerror(errno));
+    } else {
+	ALOGD("HWC: cretae local socket success");
+    }
+	mLooper = Looper::getForThread();
+   	if (mLooper == NULL) {
+		ALOGD("mLooper is NULL,create one");
+        	mLooper = new Looper(false);
+        	Looper::setForThread(mLooper);
+    	}
+	//mLooper->addFd(mSock, 0, Looper::EVENT_INPUT,
+        //		HWComposer::VRCommit, &mHwc);
+    ALOGD("start run VRThread");
+    run("HWCCommitThread", PRIORITY_URGENT_DISPLAY + PRIORITY_MORE_FAVORABLE);
+}
 // ---------------------------------------------------------------------------
 
 HWComposer::VSyncThread::VSyncThread(HWComposer& hwc)
@@ -1442,6 +1612,9 @@ HWComposer::VSyncThread::VSyncThread(HWComposer& hwc)
       mNextFakeVSync(0),
       mRefreshPeriod(hwc.getRefreshPeriod(HWC_DISPLAY_PRIMARY))
 {
+}
+void HWComposer::VSyncThread::onFirstRef() {
+    run("VSyncThread", PRIORITY_URGENT_DISPLAY + PRIORITY_MORE_FAVORABLE);
 }
 
 void HWComposer::VSyncThread::setEnabled(bool enabled) {
@@ -1452,9 +1625,6 @@ void HWComposer::VSyncThread::setEnabled(bool enabled) {
     }
 }
 
-void HWComposer::VSyncThread::onFirstRef() {
-    run("VSyncThread", PRIORITY_URGENT_DISPLAY + PRIORITY_MORE_FAVORABLE);
-}
 
 bool HWComposer::VSyncThread::threadLoop() {
     { // scope for lock

@@ -25,9 +25,11 @@
 #include <gui/BitTube.h>
 #include <gui/IDisplayEventConnection.h>
 #include <gui/DisplayEventReceiver.h>
+#include <gui/DisplayEventReceiverVR.h>
 
 #include <utils/Errors.h>
 #include <utils/String8.h>
+#include <cutils/properties.h>
 #include <utils/Trace.h>
 
 #include "EventThread.h"
@@ -404,9 +406,21 @@ void EventThread::Connection::requestNextVsync() {
     mEventThread->requestNextVsync(this);
 }
 
+static bool isInVRMode(){
+	char value[PROPERTY_VALUE_MAX];
+	property_get("sf.vrmode", value, "0");	
+	ALOGD("sf.vrmode: %s",value);
+	return (atoi(value) > 0)?true:false;
+}
 status_t EventThread::Connection::postEvent(
         const DisplayEventReceiver::Event& event) {
-    ssize_t size = DisplayEventReceiver::sendEvents(mChannel, &event, 1);
+	ssize_t size =0;
+    if(isInVRMode()){
+
+		size = DisplayEventReceiverVR::sendEvents(mChannel, &event, 1);
+   	} else {
+		size = DisplayEventReceiver::sendEvents(mChannel, &event, 1);
+	}
     return size < 0 ? status_t(size) : status_t(NO_ERROR);
 }
 

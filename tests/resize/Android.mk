@@ -2,7 +2,7 @@ LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:= \
-	resize_signal.cpp
+	testEgl.cpp
 #	localsocket.cpp
 
 LOCAL_SHARED_LIBRARIES := \
@@ -11,7 +11,12 @@ LOCAL_SHARED_LIBRARIES := \
     libui \
     libgui\
 	libbinder \
-	libskia
+	libskia \
+	libEGL \
+	libGLESv1_CM 
+
+
+
 
 LOCAL_MODULE:= resize
 

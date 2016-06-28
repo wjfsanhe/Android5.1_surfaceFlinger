@@ -146,6 +146,12 @@ static sp<Layer> lastSurfaceViewLayer;
 bool SurfaceFlinger::sExtendedMode = false;
 #endif
 
+static bool isInVRMode(){
+	char value[PROPERTY_VALUE_MAX];
+	property_get("sf.vrmode", value, "0");	
+	ALOGD("sf.vrmode: %s",value);
+	return (atoi(value) > 0)?true:false;
+}
 SurfaceFlinger::SurfaceFlinger()
     :   BnSurfaceComposer(),
         mTransactionFlags(0),
@@ -156,8 +162,6 @@ SurfaceFlinger::SurfaceFlinger()
         mRenderEngine(NULL),
         mBootTime(systemTime()),
         mVisibleRegionsDirty(false),
-        mHwWorkListDirty(false),
-        mAnimCompositionPending(false),
         mDebugRegion(0),
         mDebugDDMS(0),
         mDebugDisableHWC(0),
@@ -406,7 +410,13 @@ private:
         }
 
         if (callback != NULL) {
-            callback->onVSyncEvent(when);
+			if(isInVRMode()) {
+				if(strncmp(mVsyncEventLabel.string(),"VSYNC-vrin",10)== 0
+						|| strncmp(mVsyncEventLabel.string(),"VSYNC-vrout",11)==0)
+				callback->onVSyncEvent(when);
+			} else {
+				callback->onVSyncEvent(when);
+			}
         }
     }
 
@@ -497,12 +507,24 @@ void SurfaceFlinger::init() {
 
     // start the EventThread
     sp<VSyncSource> vsyncSrc = new DispSyncSource(&mPrimaryDispSync,
-            vsyncPhaseOffsetNs, true, "app");
+            //vsyncPhaseOffsetNs, true, "app");
+            0, true, "app");
     mEventThread = new EventThread(vsyncSrc);
     sp<VSyncSource> sfVsyncSrc = new DispSyncSource(&mPrimaryDispSync,
             sfVsyncPhaseOffsetNs, true, "sf");
-    //        0, true, "sf");
+
+    
+    sp<VSyncSource> vrVsyncSrcIn = new DispSyncSource(&mPrimaryDispSync,
+          8000000, true, "vrin");
+
+    sp<VSyncSource> vrVsyncSrcOut = new DispSyncSource(&mPrimaryDispSync,
+            4000000, true, "vrout");
+
+	
+
+    //       0, true, "sf");
     mSFEventThread = new EventThread(sfVsyncSrc);
+    mSFEventThreadVR = new EventThread(vrVsyncSrcOut);
     mEventQueue.setEventThread(mSFEventThread);
 
     mEventControlThread = new EventControlThread(this);
@@ -513,7 +535,7 @@ void SurfaceFlinger::init() {
     if (mHwc->initCheck() != NO_ERROR) {
         mPrimaryDispSync.setPeriod(16666667);
     }
-
+    mHwc->setVsyncSource(vrVsyncSrcIn);
     // initialize our drawing state
     mDrawingState = mCurrentState;
 
@@ -759,8 +781,14 @@ status_t SurfaceFlinger::getAnimationFrameStats(FrameStats* outStats) const {
 
 // ----------------------------------------------------------------------------
 
-sp<IDisplayEventConnection> SurfaceFlinger::createDisplayEventConnection() {
-    return mEventThread->createEventConnection();
+sp<IDisplayEventConnection> SurfaceFlinger::createDisplayEventConnection(uint32_t mode) {
+	if (mode == 1) {//vr
+		ALOGD("SF create vr event connecttion");
+		return mSFEventThreadVR->createEventConnection();
+	} else {
+		ALOGD("SF create app event connection");
+		return mEventThread->createEventConnection();
+	}
 }
 
 // ----------------------------------------------------------------------------
@@ -968,18 +996,13 @@ void SurfaceFlinger::setUpTiledDr() {
 #endif
 void SurfaceFlinger::handleMessageRefresh() {
     ATRACE_CALL();
-    ALOGD("%s 1",__func__);
     preComposition();
-    ALOGD("%s 2",__func__);
     rebuildLayerStacks();
-    ALOGD("%s 3",__func__);
     setUpHWComposer();
-    ALOGD("%s 4",__func__);
 #ifdef QCOM_BSP
     setUpTiledDr();
 #endif
     doDebugFlashRegions();
-    ALOGD("%s 5",__func__);
     doComposition();
     postComposition();
 }
@@ -2828,6 +2851,7 @@ status_t SurfaceFlinger::onLayerRemoved(const sp<Client>& client, const sp<IBind
 {
     // called by the window manager when it wants to remove a Layer
     status_t err = NO_ERROR;
+    ALOGD("i*****SurfaceFLinger remove one layer");
     sp<Layer> l(client->getLayerUser(handle));
     if (l != NULL) {
         err = removeLayer(l);

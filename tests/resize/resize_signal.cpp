@@ -91,7 +91,7 @@ void handleConnection(int32_t fd,uint16_t *pt){
 
 			//write message once we got one signal.
                         oddEven=!oddEven;
-                        //fprintf(stderr,"odd=%d\n",oddEven);
+                        fprintf(stderr,"time odd=%d\n",oddEven);
 		//	android_memset16(pt, 0x00, bpr*outBuffer.height);
                         if(!oddEven){
                                 //fprintf(stderr,"..,%d\n",outBuffer.height);
@@ -153,8 +153,11 @@ void* threadSignal(uint16_t* pt){
         printf("----------------outBuffer.height=%d\n",outBuffer.height);
 	android_memset16((uint16_t*)outBuffer.bits, 0xF800, bpr*outBuffer.height);
 	surface->Post();
+	//left eye and right eye.
 
+	
 
+	return NULL;
 
 	if(mSock < 0) {    
 		printf("resize: create local socket fail, %s\n",strerror(errno));
@@ -208,6 +211,9 @@ void *threadEnv(void*){
    
 
     printf("change surface Content  %s %d",__func__,__LINE__);
+    
+
+    //surface->lock(&outBuffer, NULL);  
     //ssize_t bpr = outBuffer.stride * bytesPerPixel(outBuffer.format);
     bool oddEven=true;
     int64_t  start,end,end2;

@@ -24,13 +24,17 @@
 
 #include <ui/Fence.h>
 
+#include <cutils/sockets.h>
 #include <utils/BitSet.h>
 #include <utils/Condition.h>
 #include <utils/Mutex.h>
+#include <utils/Looper.h>
 #include <utils/StrongPointer.h>
 #include <utils/Thread.h>
 #include <utils/Timers.h>
 #include <utils/Vector.h>
+#include "../EventThread.h"
+
 
 #define MAX_LAYER_COUNT 32
 
@@ -55,7 +59,7 @@ class Region;
 class String8;
 class SurfaceFlinger;
 
-class HWComposer
+class HWComposer : private  VSyncSource::Callback
 {
 public:
     class EventHandler {
@@ -92,6 +96,7 @@ public:
     // IDs below NUM_BUILTIN_DISPLAYS are not recycled.
     status_t freeDisplayId(int32_t id);
 
+    status_t setVsyncSource(sp<VSyncSource>); 
 
     // Asks the HAL what it can do
     status_t prepare();
@@ -309,6 +314,20 @@ public:
 
     // this class is only used to fake the VSync event on systems that don't
     // have it.
+    class VRCommitThread : public Thread {
+        HWComposer& mHwc;
+	sp<Looper> mLooper; 
+        mutable nsecs_t mNextFakeVSync;
+        nsecs_t mRefreshPeriod;
+	int32_t mSock;	
+        mutable Mutex mLock;
+        virtual void onFirstRef();
+	virtual bool threadLoop();
+    public:
+	VRCommitThread(HWComposer& hwc);
+	Condition mVRSignal;
+	bool mEnabled;
+    };
     class VSyncThread : public Thread {
         HWComposer& mHwc;
         mutable Mutex mLock;
@@ -324,6 +343,7 @@ public:
     };
 
     friend class VSyncThread;
+    friend class VRCommitThread;
 
     // for debugging ----------------------------------------------------------
     void dump(String8& out) const;
@@ -331,8 +351,11 @@ public:
 private:
     void loadHwcModule();
     int loadFbHalModule();
+
+    virtual void onVSyncEvent(nsecs_t timestamp);
     //commit for vr mode
-    status_t VRCommit();
+    // static 
+    int VRCommit(int fd, int events, void* data);
     
     LayerListIterator getLayerIterator(int32_t id, size_t index);
 
@@ -379,6 +402,7 @@ private:
         int32_t events;
     };
 
+    sp<VSyncSource> mVSyncSource;
     sp<SurfaceFlinger>              mFlinger;
     framebuffer_device_t*           mFbDev;
     struct hwc_composer_device_1*   mHwc;
@@ -393,6 +417,7 @@ private:
     EventHandler&                   mEventHandler;
     size_t                          mVSyncCounts[HWC_NUM_PHYSICAL_DISPLAY_TYPES];
     sp<VSyncThread>                 mVSyncThread;
+    sp<VRCommitThread>              mVRCommitThread;
     bool                            mDebugForceFakeVSync;
     BitSet32                        mAllocatedDisplayIDs;
     bool                            mVDSEnabled;

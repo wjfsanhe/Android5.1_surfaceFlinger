@@ -19,18 +19,39 @@
 
 #include <fcntl.h>
 #include <sys/ioctl.h>
+#include <utils/Log.h>
 #include <linux/fb.h>
 #include <errno.h>
 #include <string.h>
 #include <stdio.h>
 
-#ifndef FBIO_WAITFORVSYNC
+#ifndef FBIO_WAITFORVSYNC 
 #define FBIO_WAITFORVSYNC   _IOW('F', 0x20, __u32)
 #endif
 
 int main(int argc, char** argv) {
+    struct fb_fix_screeninfo finfo;
+    struct fb_var_screeninfo info;
+    
     int fd = open("/dev/graphics/fb0", O_RDWR);
-    if (fd >= 0) {
+    if (fd <0 ) printf("file open fail\n");
+    //if (ioctl(fd, FBIOGET_VSCREENINFO, &info) == -1) {
+    printf("cmd is %d\n",FBIO_WAITFORVSYNC) ;
+    while (1) {
+	    if (ioctl(fd, FBIO_WAITFORVSYNC,0) == -1) {
+		    ALOGD("%s:Error in ioctl FBIOGET_VSCREENINFO: %s\n", __FUNCTION__,
+				    strerror(errno));
+		    //close(fd);
+		    //return -errno;
+	    }	
+	    ALOGD("get one vsync \n");
+    }
+
+
+	printf("exit\n");
+
+
+    /*if (fd >= 0) {
         do {
             uint32_t crt = 0;
            int err = ioctl(fd, FBIO_WAITFORVSYNC, &crt);
@@ -40,6 +61,6 @@ int main(int argc, char** argv) {
            }
         } while(1);
         close(fd);
-    }
+    }*/
     return 0;
 }

@@ -21,22 +21,23 @@
 #include <utils/Errors.h>
 #include <utils/Log.h>
 
-
 #include "LayerBF.h"
 
 namespace android {
 // ---------------------------------------------------------------------------
-const String8 SOCKET_NAME("signalBF");
+const String8 SOCKET_NAME("TsignalBF");
 
 LayerBF::LayerBF(SurfaceFlinger* flinger, const sp<Client>& client,
         const String8& name, uint32_t w, uint32_t h, uint32_t flags)
     : Layer(flinger, client, name, w, h, flags) {
  	mFirstCall = 1;
-	mThreadInit = true; 
+	mThreadInit = true;
+	mSock=-1; 
 }
 
 LayerBF::~LayerBF() {
 	ALOGD("LayerBF destroyed~~");
+	//Layer::~Layer();
 }
 
 
@@ -74,7 +75,6 @@ void LayerBF::onFirstRef() {
 }
 
 int  LayerBF::commitBuffer(int fd, int events, void* data) {
-
     LayerBF* layer = reinterpret_cast<LayerBF*>(data);
     ALOGD("LayerBF: %s-get commit Buffer request,mSock[%d],requestfd[%d]\n",
 		layer->getTypeId(),
@@ -103,7 +103,7 @@ void LayerBF::onFrameAvailable(const BufferItem& item) {
 	mQueueItems.clear();
 	mQueueItems.push_back(item);
     }
-    ALOGD("LayerBF new frame coming,%d",mQueuedFrames);
+    ALOGD("------LayerBF new frame coming,%d",mQueuedFrames);
     memcpy(&mBufferItem,&item,sizeof(BufferItem));
     android_atomic_inc(&mQueuedFrames);
     //mFlinger->signalLayerUpdate();
@@ -158,7 +158,9 @@ bool LayerBF::threadLoop() {
         		LayerBF::commitBuffer, this);
 	mThreadInit = false;
     }
+    
     mLooper->pollOnce(-1);
+    //usleep(1000000);
     return true;
 }
 

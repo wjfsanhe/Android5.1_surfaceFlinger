@@ -1606,6 +1606,7 @@ Layer::LayerCleaner::LayerCleaner(const sp<SurfaceFlinger>& flinger,
 
 Layer::LayerCleaner::~LayerCleaner() {
     // destroy client resources
+    ALOGD("****call destroy layer");
     mFlinger->onLayerDestroyed(mLayer);
 }
 

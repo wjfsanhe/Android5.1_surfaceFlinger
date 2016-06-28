@@ -214,7 +214,7 @@ private:
     virtual void bootFinished();
     virtual bool authenticateSurfaceTexture(
         const sp<IGraphicBufferProducer>& bufferProducer) const;
-    virtual sp<IDisplayEventConnection> createDisplayEventConnection();
+    virtual sp<IDisplayEventConnection> createDisplayEventConnection(uint32_t mode);
     virtual status_t captureScreen(const sp<IBinder>& display,
             const sp<IGraphicBufferProducer>& producer,
             Rect sourceCrop, uint32_t reqWidth, uint32_t reqHeight,
@@ -497,6 +497,7 @@ private:
     bool mGpuToCpuSupported;
     sp<EventThread> mEventThread;
     sp<EventThread> mSFEventThread;
+    sp<EventThread> mSFEventThreadVR;
     sp<EventControlThread> mEventControlThread;
     EGLContext mEGLContext;
     EGLDisplay mEGLDisplay;

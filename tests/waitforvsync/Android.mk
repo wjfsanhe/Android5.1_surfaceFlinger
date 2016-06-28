@@ -7,7 +7,7 @@ LOCAL_SRC_FILES:= \
 LOCAL_SHARED_LIBRARIES := \
 	libcutils \
 
-LOCAL_MODULE:= test-waitforvsync
+LOCAL_MODULE:= vsync
 
 LOCAL_MODULE_TAGS := tests
 

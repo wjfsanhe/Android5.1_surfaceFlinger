@@ -11,7 +11,7 @@ LOCAL_SHARED_LIBRARIES := \
     libui \
     libgui
 
-LOCAL_MODULE:= test-vsync-events
+LOCAL_MODULE:= vsync
 
 LOCAL_MODULE_TAGS := tests
 
